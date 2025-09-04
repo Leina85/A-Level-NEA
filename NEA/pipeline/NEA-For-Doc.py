@@ -31,12 +31,12 @@ standard_btns = {
 # Standard button function
 def standard_btn(width, height, center, active, user_text, standard_button_key, btn_color_active, btn_color_passive, screen, base_font, text_color):
     # Create the button
-    standard_btn = pygame.Rect(0, 0, width, height)
-    standard_btn.center = center
+    button_rect = pygame.Rect(0, 0, width, height)
+    button_rect.center = center
 
     # Determine button color
     btn_color = btn_color_active if active else btn_color_passive
-    pygame.draw.rect(screen, btn_color, standard_btn)
+    pygame.draw.rect(screen, btn_color, button_rect)
 
     # Display placeholder or user input
     if user_text == '' and not active:
@@ -45,10 +45,10 @@ def standard_btn(width, height, center, active, user_text, standard_button_key, 
         text_surf = base_font.render(user_text, True, text_color)
 
     # Center the text vertically
-    text_rect = text_surf.get_rect(midleft=(standard_btn.x + 5, standard_btn.centery))
+    text_rect = text_surf.get_rect(midleft=(button_rect.x + 5, button_rect.centery))
     screen.blit(text_surf, text_rect)
 
-    return standard_btn
+    return button_rect
 
 # Main loop
 while True:
