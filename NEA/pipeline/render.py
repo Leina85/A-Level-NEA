@@ -1,2 +1,2 @@
 import pygame
-from config import COLORS, BTN_SIZE
+from configuration import COLORS, BTN_SIZE
