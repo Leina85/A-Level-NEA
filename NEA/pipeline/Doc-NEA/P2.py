@@ -1,18 +1,14 @@
 import pygame
 import sys
 
-pygame.init()
-clock = pygame.time.Clock()
+# =============
+# CONFIGURATION
+# =============
 
 # Screen setup
-screen = pygame.display.set_mode([1280, 720])
-font = pygame.font.Font(None, 70)
-
-# Button dimensions
-btn_size = (240, 64)
-
-# Track which button is active
-active_btn = None
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+FPS = 60
 
 # Colours
 colours = {
@@ -21,6 +17,12 @@ colours = {
     'background_colour' : '#F2F2F2',
     'text_colour' : '#F2F2F2'
 }
+
+# Button dimensions
+BTN_SIZE = (240, 64)
+
+# Track which button is active
+active_btn = None
 
 # Standard Button position and text to be used in standard_button subroutine
 standard_btns = {
@@ -83,3 +85,107 @@ while True:
 
     pygame.display.update()
     clock.tick(60)
+
+# ==================================
+# Drawing Everything onto the Screen
+# ==================================
+
+def draw_btn(screen, font, btn_id):
+    
+
+# ==============
+# Event Handling (check handle_mouse_click() for efficiency and if active = ... is in the right place
+# ==============
+
+def handle_mouse_click(pos):
+    # takes pos, the coordinates of the mouse click as a parameter
+    # resets the clicked_btn
+    clicked_btn = None
+    for btn_id, btn_data in SCREEN['buttons'].items():
+        btn_rect = pygame.Rect(0, 0, *BTN_SIZE)
+        btn_rect.center = btn_data['pos']
+        # If the click is on the button, that button becomes active
+        if btn_rect.collidepoint(pos):
+            clicked_btn = btn_id
+            break
+    
+    # The clicked button becomes active
+    set_active_btn(clicked_btn)
+
+def handle_key_input():
+    # Key inputs only used for button inputs so reliant on a button being active
+    active = get_active_btn()
+    
+    # Exits function if no active button
+    if not active:
+        return
+    
+    # Function continues so a button must be active, its assigned the variable 'button'
+    button = SCREEN['buttons'][active]
+    if event.key == pygame.K_BACKSPACE:
+        # Backspace deletes the last character of the input
+        button['text'] = button['text'][:-1]
+    elif event.key == pygame.K_RETURN and button['text']:
+        # Enter outputs the text to the command line
+        print(f"Input for button {active}: {button['text']}")
+    elif event.unicode.isdigit() and len(button['text']) < 7:
+        # User can input only numbers and has a character limit of 7 (later this will need to be specific per button as different inputs will need different limits)
+        button['text'] += event.unicode
+
+# =================
+# Screen Management
+# =================
+
+def render_screen(screen, font):
+    active = get_active_btn()
+    
+    # Clear the screen and draw the background and title of the screen
+    clear_screen(screen)
+    draw_title(screen, font, SCREEN['title'])
+    
+    # Draw the appropriate buttons
+    for btn_id, btn_data in SCREEN['buttons']:
+        draw_btn(screen, font, btn_id)
+
+def update_screen():
+    # Update the display
+    pygame.display.update()
+
+# ============
+# Main Program
+# ============
+
+def start_pygame():
+    # Initilise pygame
+    # Create the window using constants defined at the start of the program
+    # Create clock and font
+    pygame.init()
+    screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+    clock = pygame.time.Clock()
+    font = pygame.font.Font(None, 70)
+    return screen, clock, font
+
+def events():
+    # Call the appropriate function for each event
+    for event in pygame.event.get():
+        # Quit event
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            handle_mouse_click(event.pos)
+        elif event.type == pygame.KEYDOWN:
+            handle_key_input()
+
+def main():
+    screen, clock, font = start_pygame()
+    
+    # Check events, render the screen and update it
+    while True:
+        events()
+        render_screen(screen, font)
+        update_screen()
+        clock.tick(FPS)
+
+# Run Program
+main()
