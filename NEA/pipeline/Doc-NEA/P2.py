@@ -6,49 +6,45 @@ clock = pygame.time.Clock()
 
 # Screen setup
 screen = pygame.display.set_mode([1280, 720])
-base_font = pygame.font.Font(None, 70)
+font = pygame.font.Font(None, 70)
 
-# Standard Button dimensions
-standard_btn_width = 240
-standard_btn_height = 64
+# Button dimensions
+btn_size = (240, 64)
 
 # Track which button is active
 active_btn = None
 
 # Colours
-btn_colour_active = '#4A7090'
-btn_colour_passive = '#86A6C1'
-background_colour = '#F2F2F2'
-text_colour = '#F2F2F2'
+colours = {
+    'btn_active' : '#4A7090',
+    'btn_passive' : '#86A6C1',
+    'background_colour' : '#F2F2F2',
+    'text_colour' : '#F2F2F2'
+}
 
 # Standard Button position and text to be used in standard_button subroutine
 standard_btns = {
-    1: {'pos': (screen.get_width() // 2, screen.get_height() // 2), 'text': ''},
-    2: {'pos': (screen.get_width() // 2, screen.get_height() // 2 + 100), 'text': ''},
-    3: {'pos': (screen.get_width() // 2, screen.get_height() // 2 - 100), 'text': ''}
+    1: {'pos': (640, 260), 'text': ''},
+    2: {'pos': (640, 360), 'text': ''},
+    3: {'pos': (640, 460), 'text': ''}
 }
 
 # Standard button function
-def standard_btn(width, height, center, active, user_text, standard_button_key, btn_color_active, btn_color_passive, screen, base_font, text_color):
-    # Create the button
-    button_rect = pygame.Rect(0, 0, width, height)
-    button_rect.center = center
-
-    # Determine button color
-    btn_color = btn_color_active if active else btn_color_passive
-    pygame.draw.rect(screen, btn_color, button_rect)
-
-    # Display placeholder or user input
-    if user_text == '' and not active:
-        text_surf = base_font.render(str(standard_button_key), True, text_color)
-    else:
-        text_surf = base_font.render(user_text, True, text_color)
-
-    # Center the text vertically
-    text_rect = text_surf.get_rect(midleft=(button_rect.x + 5, button_rect.centery))
+def draw_button(pos, text, btn_id, is_active=False):
+    #Draw a standard input button
+    rect = pygame.Rect(0, 0, *btn_size)
+    rect.center = pos
+    
+    color = colours['btn_active'] if is_active else colours['btn_passive']
+    pygame.draw.rect(screen, color, rect)
+    
+    # Show placeholder number if empty and not active
+    display_text = text if text or is_active else str(btn_id)
+    text_surf = font.render(display_text, True, colours['text'])
+    text_rect = text_surf.get_rect(midleft=(rect.x + 5, rect.centery))
     screen.blit(text_surf, text_rect)
-
-    return button_rect
+    
+    return rect
 
 # Main loop
 while True:
@@ -61,7 +57,7 @@ while True:
         # Mouse click to activate a button
         if event.type == pygame.MOUSEBUTTONDOWN:
             for standard_btn_key, standard_btn_data in standard_btns.items():
-                btn_rect = standard_btn(standard_btn_width, standard_btn_height, standard_btn_data['pos'], active_btn == standard_btn_key, standard_btn_data['text'], standard_btn_key, btn_colour_active, btn_colour_passive, screen, base_font, text_colour)
+                btn_rect = standard_btn(standard_btn_width, standard_btn_height, standard_btn_data['pos'], active_btn == standard_btn_key, standard_btn_data['text'], standard_btn_key, btn_colour_active, btn_passive, screen, base_font, text_colour)
                 if btn_rect.collidepoint(event.pos):
                     active_btn = standard_btn_key
                     break
@@ -83,7 +79,7 @@ while True:
     
     # Draw each button and update its state
     for standard_btn_key, standard_btn_data in standard_btns.items():
-        standard_btn(standard_btn_width, standard_btn_height, standard_btn_data['pos'], active_btn == standard_btn_key, standard_btn_data['text'], standard_btn_key, btn_colour_active, btn_colour_passive, screen, base_font, text_colour)
+        standard_btn(standard_btn_width, standard_btn_height, standard_btn_data['pos'], active_btn == standard_btn_key, standard_btn_data['text'], standard_btn_key, btn_colour_active, btn_passive, screen, base_font, text_colour)
 
     pygame.display.update()
     clock.tick(60)
