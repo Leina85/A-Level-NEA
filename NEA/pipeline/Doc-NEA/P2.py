@@ -1,191 +1,115 @@
 import pygame
 import sys
 
-# =============
+# ============================================================================
 # CONFIGURATION
-# =============
+# ============================================================================
 
-# Screen setup
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FPS = 60
 
-# Colours
-colours = {
-    'btn_active' : '#4A7090',
-    'btn_passive' : '#86A6C1',
-    'background_colour' : '#F2F2F2',
-    'text_colour' : '#F2F2F2'
+COLOURS = {
+    'btnactive': '#4A7090',
+    'btnpassive': '#86A6C1',
+    'navbtn': '#2E5266',
+    'background': '#F2F2F2',
+    'text': '#F2F2F2',
+    'title': '#333333'
 }
 
-# Button dimensions
 BTN_SIZE = (240, 64)
 
-# Track which button is active
-active_btn = None
-
-# Standard Button position and text to be used in standard_button subroutine
-standard_btns = {
-    1: {'pos': (640, 260), 'text': ''},
-    2: {'pos': (640, 360), 'text': ''},
-    3: {'pos': (640, 460), 'text': ''}
+SCREEN = {
+    'title': 'Main Screen',
+    'buttons': {
+        1: {'pos': (640, 260), 'text': ''},
+        2: {'pos': (640, 360), 'text': ''},
+        3: {'pos': (640, 460), 'text': ''}
+    }
 }
 
-# Standard button function
-def draw_button(pos, text, btn_id, is_active=False):
-    #Draw a standard input button
-    rect = pygame.Rect(0, 0, *btn_size)
-    rect.center = pos
-    
-    color = colours['btn_active'] if is_active else colours['btn_passive']
-    pygame.draw.rect(screen, color, rect)
-    
-    # Show placeholder number if empty and not active
-    display_text = text if text or is_active else str(btn_id)
-    text_surf = font.render(display_text, True, colours['text'])
-    text_rect = text_surf.get_rect(midleft=(rect.x + 5, rect.centery))
-    screen.blit(text_surf, text_rect)
-    
-    return rect
+# ============================================================================
+# CORE FUNCTIONS
+# ============================================================================
 
-# Main loop
-while True:
+def handleevents(activebtn, screendata):
     for event in pygame.event.get():
-        # Quit event
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
-        # Mouse click to activate a button
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for standard_btn_key, standard_btn_data in standard_btns.items():
-                btn_rect = standard_btn(standard_btn_width, standard_btn_height, standard_btn_data['pos'], active_btn == standard_btn_key, standard_btn_data['text'], standard_btn_key, btn_colour_active, btn_passive, screen, base_font, text_colour)
-                if btn_rect.collidepoint(event.pos):
-                    active_btn = standard_btn_key
+            
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Check which button was clicked
+            clickedbtn = None
+            for btnid, btndata in screendata['buttons'].items():
+                btnrect = pygame.Rect(0, 0, *BTN_SIZE)
+                btnrect.center = btndata['pos']
+                if btnrect.collidepoint(event.pos):
+                    clickedbtn = btnid
                     break
-            else:
-                active_btn = None  # Deselect if clicked outside
-
-        # Input handling
-        if event.type == pygame.KEYDOWN and active_btn:
+            activebtn = clickedbtn
+            
+        elif event.type == pygame.KEYDOWN and activebtn:
+            # Handle text input for active button
+            currenttext = screendata['buttons'][activebtn]['text']
+            
             if event.key == pygame.K_BACKSPACE:
-                standard_btns[active_btn]['text'] = standard_btns[active_btn]['text'][:-1]
-            elif event.unicode.isdigit() and len(standard_btns[active_btn]['text']) < 7:  # Only allow digits
-                standard_btns[active_btn]['text'] += event.unicode
-            elif event.key == pygame.K_RETURN and len(standard_btns[active_btn]['text']) > 0:
-                print(f"User input for button {active_btn}:", standard_btns[active_btn]['text'])
-
+                screendata['buttons'][activebtn]['text'] = currenttext[:-1]
+            elif event.key == pygame.K_RETURN and currenttext:
+                print(f"Input for button {activebtn}: {currenttext}")
+            elif event.unicode.isdigit() and len(currenttext) < 7:
+                screendata['buttons'][activebtn]['text'] = currenttext + event.unicode
     
-    # Set background colour
-    screen.fill(background_colour)
+    return activebtn
+
+def renderscreen(screen, font, activebtn, screendata):
+    # Clear screen
+    screen.fill(COLOURS['background'])
     
-    # Draw each button and update its state
-    for standard_btn_key, standard_btn_data in standard_btns.items():
-        standard_btn(standard_btn_width, standard_btn_height, standard_btn_data['pos'], active_btn == standard_btn_key, standard_btn_data['text'], standard_btn_key, btn_colour_active, btn_passive, screen, base_font, text_colour)
-
-    pygame.display.update()
-    clock.tick(60)
-
-# ==================================
-# Drawing Everything onto the Screen
-# ==================================
-
-def draw_btn(screen, font, btn_id):
+    # Draw title
+    titlesurf = font.render(screendata['title'], True, COLOURS['title'])
+    titlerect = titlesurf.get_rect(center=(SCREEN_WIDTH // 2, 100))
+    screen.blit(titlesurf, titlerect)
     
-
-# ==============
-# Event Handling (check handle_mouse_click() for efficiency and if active = ... is in the right place
-# ==============
-
-def handle_mouse_click(pos):
-    # takes pos, the coordinates of the mouse click as a parameter
-    # resets the clicked_btn
-    clicked_btn = None
-    for btn_id, btn_data in SCREEN['buttons'].items():
-        btn_rect = pygame.Rect(0, 0, *BTN_SIZE)
-        btn_rect.center = btn_data['pos']
-        # If the click is on the button, that button becomes active
-        if btn_rect.collidepoint(pos):
-            clicked_btn = btn_id
-            break
+    # Draw all buttons
+    for btnid, btndata in screendata['buttons'].items():
+        isactive = (activebtn == btnid)
+        
+        # Draw button rectangle
+        rect = pygame.Rect(0, 0, *BTN_SIZE)
+        rect.center = btndata['pos']
+        colour = COLOURS['btnactive'] if isactive else COLOURS['btnpassive']
+        pygame.draw.rect(screen, colour, rect)
+        
+        # Draw button text
+        displaytext = btndata['text'] if btndata['text'] or isactive else str(btnid)
+        textsurf = font.render(displaytext, True, COLOURS['text'])
+        textrect = textsurf.get_rect(midleft=(rect.x + 5, rect.centery))
+        screen.blit(textsurf, textrect)
     
-    # The clicked button becomes active
-    set_active_btn(clicked_btn)
-
-def handle_key_input():
-    # Key inputs only used for button inputs so reliant on a button being active
-    active = get_active_btn()
-    
-    # Exits function if no active button
-    if not active:
-        return
-    
-    # Function continues so a button must be active, its assigned the variable 'button'
-    button = SCREEN['buttons'][active]
-    if event.key == pygame.K_BACKSPACE:
-        # Backspace deletes the last character of the input
-        button['text'] = button['text'][:-1]
-    elif event.key == pygame.K_RETURN and button['text']:
-        # Enter outputs the text to the command line
-        print(f"Input for button {active}: {button['text']}")
-    elif event.unicode.isdigit() and len(button['text']) < 7:
-        # User can input only numbers and has a character limit of 7 (later this will need to be specific per button as different inputs will need different limits)
-        button['text'] += event.unicode
-
-# =================
-# Screen Management
-# =================
-
-def render_screen(screen, font):
-    active = get_active_btn()
-    
-    # Clear the screen and draw the background and title of the screen
-    clear_screen(screen)
-    draw_title(screen, font, SCREEN['title'])
-    
-    # Draw the appropriate buttons
-    for btn_id, btn_data in SCREEN['buttons']:
-        draw_btn(screen, font, btn_id)
-
-def update_screen():
-    # Update the display
     pygame.display.update()
 
-# ============
-# Main Program
-# ============
-
-def start_pygame():
-    # Initilise pygame
-    # Create the window using constants defined at the start of the program
-    # Create clock and font
+def main():
+    # Initialise
     pygame.init()
     screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 70)
-    return screen, clock, font
-
-def events():
-    # Call the appropriate function for each event
-    for event in pygame.event.get():
-        # Quit event
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            handle_mouse_click(event.pos)
-        elif event.type == pygame.KEYDOWN:
-            handle_key_input()
-
-def main():
-    screen, clock, font = start_pygame()
     
-    # Check events, render the screen and update it
+    # Local state
+    activebtn = None
+    screendata = SCREEN.copy()
+    screendata['buttons'] = {k: v.copy() for k, v in SCREEN['buttons'].items()}
+    
+    # Main loop
     while True:
-        events()
-        render_screen(screen, font)
-        update_screen()
+        activebtn = handleevents(activebtn, screendata)
+        renderscreen(screen, font, activebtn, screendata)
         clock.tick(FPS)
 
-# Run Program
+# ============================================================================
+# RUN APPLICATION
+# ============================================================================
+
 main()
