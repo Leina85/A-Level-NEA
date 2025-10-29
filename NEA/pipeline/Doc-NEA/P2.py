@@ -20,12 +20,21 @@ COLOURS = {
 
 BTN_SIZE = (240, 64)
 
-SCREEN = {
-    'title': 'Main Screen',
-    'buttons': {
-        1: {'pos': (640, 260), 'text': ''},
-        2: {'pos': (640, 360), 'text': ''},
-        3: {'pos': (640, 460), 'text': ''}
+SCREENS = {
+    0: {
+        'title': 'Input Screen',
+        'buttons': {
+            1: {'pos': (640, 260), 'text': ''},
+            2: {'pos': (640, 360), 'text': ''},
+            3: {'pos': (640, 460), 'text': ''}
+        }
+    },
+    1: {
+        'title': 'Main Screen',
+        'buttons': {
+            1: {'pos': (640, 310), 'text': 'Start'},
+            2: {'pos': (640, 410), 'text': 'Settings'}
+        }
     }
 }
 
