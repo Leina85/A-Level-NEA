@@ -18,11 +18,13 @@ COLOURS = {
     'title': '#333333'
 }
 
-BTN_SIZE = (240, 64)
+INP_BTN_SIZE = (240, 64)
+NAV_BTN_SIZE = (200, 60)
 
 SCREENS = {
     0: {
-        'title': 'Input Screen',
+        'title': 'Main Screen',
+        'navbtn': {'text': 'InpScreen', 'target': 1},
         'buttons': {
             1: {'pos': (640, 260), 'text': ''},
             2: {'pos': (640, 360), 'text': ''},
@@ -30,10 +32,11 @@ SCREENS = {
         }
     },
     1: {
-        'title': 'Main Screen',
+        'title': 'Second Screen',
+        'navbtn': {'text': 'Back', 'target': 0},
         'buttons': {
-            1: {'pos': (640, 310), 'text': 'Start'},
-            2: {'pos': (640, 410), 'text': 'Settings'}
+            1: {'pos': (640, 310), 'text': ''},
+            2: {'pos': (640, 410), 'text': ''}
         }
     }
 }
