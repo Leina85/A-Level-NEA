@@ -103,21 +103,29 @@ def renderscreen(screen, font, activebtn, screendata):
     pygame.display.update()
 
 def main():
-    # Initialise
+    # Initialise Pygame
     pygame.init()
     screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 70)
     
-    # Local state
+    # Initialise local state
     activebtn = None
-    screendata = SCREEN.copy()
-    screendata['buttons'] = {k: v.copy() for k, v in SCREEN['buttons'].items()}
+    current_screen = 0
     
-    # Main loop
+    # Copy screen data to preserve changes made by user
+    screendata = {}
+    for screenid, screeninfo in SCREENS.items():
+        screendata[screenid] = {
+            'title': screeninfo['title'],
+            'navbtn': screeninfo['navbtn'].copy(),
+            'buttons': {k: v.copy() for k, v in screeninfo['buttons'].items()}
+        }
+    
+    # Main game loop
     while True:
-        activebtn = handleevents(activebtn, screendata)
-        renderscreen(screen, font, activebtn, screendata)
+        activebtn, current_screen = handleevents(activebtn, current_screen, screendata)
+        renderscreen(screen, font, activebtn, current_screen, screendata)
         clock.tick(FPS)
 
 # ============================================================================
