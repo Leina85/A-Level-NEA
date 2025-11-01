@@ -32,7 +32,7 @@ SCREENS = {
         }
     },
     1: {
-        'title': 'Second Screen',
+        'title': 'Input Screen',
         'navbtn': {'text': 'Back', 'target': 0},
         'buttons': {
             1: {'pos': (640, 310), 'text': ''},
@@ -45,8 +45,10 @@ SCREENS = {
 # CORE FUNCTIONS
 # ============================================================================
 
-def handleevents(activebtn, screendata):
+def handleevents(activebtn, current_screen, screendata):
+    # Process all events in the queue
     for event in pygame.event.get():
+        # Handle window close
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
