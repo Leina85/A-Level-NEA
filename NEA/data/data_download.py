@@ -4,7 +4,7 @@ from botocore import UNSIGNED
 from botocore.config import Config
 
 # File name
-sequencing_summary = r"C:\<redacted_path>\NEA\sequencing_summary_PAG07165_2dfda515.txt"
+sequencing_summary = r"C:\Users\Leina School\OneDrive - Wymondham High Academy Trust\Desktop\NEA-Git\NEA\sequencing_summary_PAG07165_2dfda515.txt"
 
 # Only download if the file does not exist
 if not os.path.exists(sequencing_summary):
