@@ -1,0 +1,18 @@
+{
+    // Use the Python interpreter from your virtual environment
+    "python.pythonPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+
+    // Make sure VS Code terminal uses PowerShell by default (handles '&' in tasks)
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+
+    // Linting and formatting (optional but recommended)
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.formatting.provider": "black",
+
+    // Ensure VS Code runs Python in the terminal instead of internal console
+    "python.terminal.executeInFileDir": true,
+
+    // Optional: Auto-activate virtual environment when opening terminal
+    "python.terminal.activateEnvironment": true
+}

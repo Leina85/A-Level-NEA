@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Test Python",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "command": "${command:python.interpreterPath}",
+      "args": ["-c", "import sys;print(sys.executable)"],
+      "problemMatcher": []
+    }
+  ]
+}
