@@ -45,7 +45,7 @@ SCREENS = {
 # CORE FUNCTIONS
 # ============================================================================
 
-def handleevents(activebtn, current_screen, screendata):
+def handleevents(active_btn, current_screen, screen_data):
     # Process all events in the queue
     for event in pygame.event.get():
         # Handle window close
@@ -54,53 +54,64 @@ def handleevents(activebtn, current_screen, screendata):
             sys.exit()
             
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Check which button was clicked
-            clickedbtn = None
-            for btnid, btndata in screendata['buttons'].items():
-                btnrect = pygame.Rect(0, 0, *BTN_SIZE)
-                btnrect.center = btndata['pos']
-                if btnrect.collidepoint(event.pos):
-                    clickedbtn = btnid
-                    break
-            activebtn = clickedbtn
+            # Check navigation button
+            navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
+            if navbtn_rect.collidepoint(event.pos):
+                current_screen = screen_data[current_screen]['navbtn']['target']
+                active_btn = None
+                continue
             
-        elif event.type == pygame.KEYDOWN and activebtn:
+            # Check which input button was clicked
+            clicked_btn = None
+            for inp_btn_key, inp_btn_data in screen_data[current_screen]['buttons'].items():
+                btnrect = pygame.Rect(0, 0, *INP_BTN_SIZE)
+                btnrect.center = inp_btn_data['pos']
+                if btnrect.collidepoint(event.pos):
+                    clicked_btn = inp_btn_key
+                    break
+            active_btn = clicked_btn
+            
+        elif event.type == pygame.KEYDOWN and active_btn:
             # Handle text input for active button
-            currenttext = screendata['buttons'][activebtn]['text']
+            current_text = screen_data[current_screen]['buttons'][active_btn]['text']
             
             if event.key == pygame.K_BACKSPACE:
-                screendata['buttons'][activebtn]['text'] = currenttext[:-1]
-            elif event.key == pygame.K_RETURN and currenttext:
-                print(f"Input for button {activebtn}: {currenttext}")
-            elif event.unicode.isdigit() and len(currenttext) < 7:
-                screendata['buttons'][activebtn]['text'] = currenttext + event.unicode
-    
-    return activebtn
+                # Remove last character
+                screen_data[current_screen]['buttons'][active_btn]['text'] = current_text[:-1]
+            elif event.key == pygame.K_RETURN and current_text:
+                # Print input when Enter is pressed
+                screen_name = screen_data[current_screen]['title']
+                print(f"Input for button {active_btn} on {screen_name}: {current_text}")
+            elif event.unicode.isdigit() and len(current_text) < 7:
+                # Add digit to text (maximum 7 digits)
+                screen_data[current_screen]['buttons'][active_btn]['text'] = current_text + event.unicode
+                 
+    return active_btn, current_screen
 
-def renderscreen(screen, font, activebtn, screendata):
+def renderscreen(screen, font, activebtn, screen_data):
     # Clear screen
     screen.fill(COLOURS['background'])
     
     # Draw title
-    titlesurf = font.render(screendata['title'], True, COLOURS['title'])
-    titlerect = titlesurf.get_rect(center=(SCREEN_WIDTH // 2, 100))
-    screen.blit(titlesurf, titlerect)
+    title_surf = font.render(screen_data['title'], True, COLOURS['title'])
+    title_rect = title_surf.get_rect(center=(SCREEN_WIDTH // 2, 100))
+    screen.blit(title_surf, title_rect)
     
     # Draw all buttons
-    for btnid, btndata in screendata['buttons'].items():
+    for btnid, btn_data in screen_data['buttons'].items():
         isactive = (activebtn == btnid)
         
         # Draw button rectangle
         rect = pygame.Rect(0, 0, *BTN_SIZE)
-        rect.center = btndata['pos']
+        rect.center = btn_data['pos']
         colour = COLOURS['btnactive'] if isactive else COLOURS['btnpassive']
         pygame.draw.rect(screen, colour, rect)
         
         # Draw button text
-        displaytext = btndata['text'] if btndata['text'] or isactive else str(btnid)
-        textsurf = font.render(displaytext, True, COLOURS['text'])
-        textrect = textsurf.get_rect(midleft=(rect.x + 5, rect.centery))
-        screen.blit(textsurf, textrect)
+        display_text = btn_data['text'] if btn_data['text'] or isactive else str(btnid)
+        text_surf = font.render(display_text, True, COLOURS['text'])
+        text_rect = text_surf.get_rect(midleft=(rect.x + 5, rect.centery))
+        screen.blit(text_surf, text_rect)
     
     pygame.display.update()
 
@@ -112,22 +123,22 @@ def main():
     font = pygame.font.Font(None, 70)
     
     # Initialise local state
-    activebtn = None
+    active_btn = None
     current_screen = 0
     
     # Copy screen data to preserve changes made by user
-    screendata = {}
-    for screenid, screeninfo in SCREENS.items():
-        screendata[screenid] = {
-            'title': screeninfo['title'],
-            'navbtn': screeninfo['navbtn'].copy(),
-            'buttons': {k: v.copy() for k, v in screeninfo['buttons'].items()}
+    screen_data = {}
+    for screenid, screen_info in SCREENS.items():
+        screen_data[screenid] = {
+            'title': screen_info['title'],
+            'navbtn': screen_info['navbtn'].copy(),
+            'buttons': {k: v.copy() for k, v in screen_info['buttons'].items()}
         }
     
     # Main game loop
     while True:
-        activebtn, current_screen = handleevents(activebtn, current_screen, screendata)
-        renderscreen(screen, font, activebtn, current_screen, screendata)
+        active_btn, current_screen = handleevents(active_btn, current_screen, screen_data)
+        renderscreen(screen, font, active_btn, current_screen, screen_data)
         clock.tick(FPS)
 
 # ============================================================================
