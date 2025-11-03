@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from scipy.optimize import curve_fit
+from scipy.stats import norm, gamma, expon
 
 file_path = r"C:\Users\Leina School\OneDrive - Wymondham High Academy Trust\Desktop\NEA-Git\NEA\sequencing_summary_PAG07165_2dfda515.txt"
 #create data frame using tab separated data from .txt file
@@ -68,13 +69,37 @@ idle_summary = (
       .rename(columns={'idle_time': 'total_idle_time'})
 )
 
+# filter total idle time to remove short times and make distribution mono-modal
+idle_summary_filtered = idle_summary[idle_summary['total_idle_time'] > 2400].dropna(subset=['total_idle_time'])
+
+mu, std = norm.fit(idle_summary_filtered['total_idle_time'])
+
+# Print fitted parameters
+print(f"Fitted Normal Distribution Parameters:")
+print(f"  Mean (μ): {mu:.3f}")
+print(f"  Standard Deviation (σ): {std:.3f}")
+
 print(idle_summary.head(10))
 
 plt.figure(figsize=(8, 5))
-plt.hist(idle_summary['total_idle_time'], bins=50, alpha=0.7)
+plt.hist(idle_summary['total_idle_time'], bins=50, density=True, alpha=0.7, color='skyblue')
+# Plot fitted normal PDF
+xmin, xmax = plt.xlim()
+x = np.linspace(xmin, xmax, 100)
+p = norm.pdf(x, mu, std)
+plt.plot(x, p, 'r', linewidth=2)
+
 plt.xlabel('Total Idle Time per Channel/Mux (s)')
 plt.ylabel('Count')
 plt.title('Distribution of Total Idle Time Across Channels/Mux')
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
+
+# preset each pores idle time until death using a set number of random values fitting the experimental distribution determined above using the calculated sd and mean
+# values from curve fit: Mean (μ): 7472.521, Standard Deviation (σ): 3024.544
+
+##import random
+##max_cycles = int(random.gauss(mu=7472.521, sigma=3024.544))
+##max_cycles = max(1, max_cycles) # avoid negative
