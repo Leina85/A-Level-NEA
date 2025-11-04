@@ -88,21 +88,16 @@ def handleevents(activebtn, current_screen, screendata):
     
     return activebtn, current_screen
 
-def drawnavbtn(screen, font, rect, text):
-    # Draw navigation button rectangle
-    pygame.draw.rect(screen, COLOURS['navbtn'], rect)
-    # Render and centre text on button
-    textsurf = font.render(text, True, COLOURS['text'])
-    textrect = textsurf.get_rect(center=rect.center)
-    screen.blit(textsurf, textrect)
-
 def renderscreen(screen, font, activebtn, current_screen, screendata):
     # Clear screen with background colour
     screen.fill(COLOURS['background'])
     
     # Draw navigation button
     navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
-    drawnavbtn(screen, font, navbtn_rect, screendata[current_screen]['navbtn']['text'])
+    pygame.draw.rect(screen, COLOURS['navbtn'], navbtn_rect)
+    textsurf = font.render(screendata[current_screen]['navbtn']['text'], True, COLOURS['text'])
+    textrect = textsurf.get_rect(center=navbtn_rect.center)
+    screen.blit(textsurf, textrect)
     
     # Draw screen title
     titlesurf = font.render(screendata[current_screen]['title'], True, COLOURS['title'])
