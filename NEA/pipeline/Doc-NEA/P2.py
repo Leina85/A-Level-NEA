@@ -88,30 +88,37 @@ def handleevents(active_btn, current_screen, screen_data):
                  
     return active_btn, current_screen
 
-def renderscreen(screen, font, activebtn, screen_data):
+def renderscreen(screen, font, activebtn, current_screen, screen_data):
     # Clear screen
     screen.fill(COLOURS['background'])
     
     # Draw title
-    title_surf = font.render(screen_data['title'], True, COLOURS['title'])
+    title_surf = font.render(screen_data[current_screen]['title'], True, COLOURS['title'])
     title_rect = title_surf.get_rect(center=(SCREEN_WIDTH // 2, 100))
     screen.blit(title_surf, title_rect)
     
-    # Draw all buttons
-    for btnid, btn_data in screen_data['buttons'].items():
-        isactive = (activebtn == btnid)
+    # Draw navigation button
+    navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
+    pygame.draw.rect(screen, COLOURS['navbtn'], navbtn_rect)
+    textsurf = font.render(screen_data[current_screen]['navbtn']['text'], True, COLOURS['text'])
+    textrect = textsurf.get_rect(center=navbtn_rect.center)
+    screen.blit(textsurf, textrect)
+    
+    # Draw all input buttons for current screen
+    for inp_btn_key, inp_btn_data in screen_data[current_screen]['buttons'].items():
+        isactive = (activebtn == inp_btn_key)
         
-        # Draw button rectangle
-        rect = pygame.Rect(0, 0, *BTN_SIZE)
-        rect.center = btn_data['pos']
+        # Draw button rectangle with appropriate colour
+        rect = pygame.Rect(0, 0, *INP_BTN_SIZE)
+        rect.center = inp_btn_data['pos']
         colour = COLOURS['btnactive'] if isactive else COLOURS['btnpassive']
         pygame.draw.rect(screen, colour, rect)
         
-        # Draw button text
-        display_text = btn_data['text'] if btn_data['text'] or isactive else str(btnid)
-        text_surf = font.render(display_text, True, COLOURS['text'])
-        text_rect = text_surf.get_rect(midleft=(rect.x + 5, rect.centery))
-        screen.blit(text_surf, text_rect)
+        # Draw button text (show button number if empty and inactive)
+        displaytext = inp_btn_data['text'] if inp_btn_data['text'] or isactive else str(inp_btn_key)
+        textsurf = font.render(displaytext, True, COLOURS['text'])
+        textrect = textsurf.get_rect(midleft=(rect.x + 5, rect.centery))
+        screen.blit(textsurf, textrect)
     
     pygame.display.update()
 
