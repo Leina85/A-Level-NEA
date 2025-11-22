@@ -61,7 +61,7 @@ data = np.random.normal(mean, std_dev, n).astype(int)
 data = np.clip(data, 1, None)
 
 # Display the generated number
-print(data)
+#print(data)
 
 # Command line user inputs
 runtime = int(input('Enter runtime (s): '))
@@ -102,4 +102,4 @@ for second in range(runtime):
         else:
             adaptive_pore[4] += sequenced_now
             
-    print(adaptive_pore)
+print(adaptive_pore)
