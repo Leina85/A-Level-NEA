@@ -17,10 +17,11 @@ print(idle_seconds_until_death)
 
 runtime = int(input('Enter runtime: '))
 avg_molecule_length = int(input('Enter Average Molecule Length: '))
-target_fraction = float('Enter fraction of target molecules to enrich (Decimal): ')
+target_fraction = float(input('Enter fraction of target molecules to enrich (Decimal): '))
 
 # [sequencing/not, idle seconds until death, bases remaining of current molecule, total bases sequenced, total target bases sequenced]
 standard_pore = [False, int(idle_seconds_until_death[0]), 0, 0, 0]
+print('standard: ', standard_pore)
 
 for second in range(runtime):
     if standard_pore[1] > 0:     
@@ -41,34 +42,14 @@ for second in range(runtime):
                 standard_pore[0] = False  # back to idle
                 standard_pore[2] = 0
         standard_pore[4] = int(round(standard_pore[3] * target_fraction))
-    print(standard_pore)
-    
-
-
-import numpy as np
-
-# Specify parameters
-mean = 7472.521
-std_dev = 3024.544
-n = 10
-
-BPS = 450
-DNA_FOUND_CHANCE = 0.5632678551
 
 # Generate random numbers
 idle_seconds_until_death = np.random.normal(mean, std_dev, n).astype(int)
 idle_seconds_until_death = np.clip(idle_seconds_until_death, 1, None)
 
-# Display the generated number
-#print(data)
-
-# Command line user inputs
-runtime = int(input('Enter runtime (s): '))
-avg_molecule_length = int(input('Enter Average Molecule Length (Bases): '))
-target_fraction = float(input('Enter fraction of target molecules to enrich (Decimal): '))
-
 # [sequencing/not, idle seconds until death, bases remaining of current molecule, total bases sequenced, total target bases sequenced, target/non target]
 adaptive_pore = [False, int(idle_seconds_until_death[0]), 0, 0, 0, False]
+print('adpative: ', adaptive_pore)
 
 for second in range(runtime):
     if adaptive_pore[1] > 0:
@@ -99,5 +80,6 @@ for second in range(runtime):
                 adaptive_pore[2] = 0
             else:
                 adaptive_pore[4] += sequenced_now
-            
-print(adaptive_pore)
+                
+print('standard: ', standard_pore)
+print('adpative: ', adaptive_pore)
