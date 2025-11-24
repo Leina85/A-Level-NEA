@@ -3,7 +3,10 @@ import numpy as np
 # Specify parameters
 mean = 7472.521
 std_dev = 3024.544
-total_pores = 10
+
+num_adaptive = 100
+num_standard = 100
+total_pores = num_standard + num_adaptive
 
 BPS = 450
 DNA_FOUND_CHANCE = 0.5632678551
@@ -18,6 +21,13 @@ target_fraction = float(input('Enter fraction of target molecules to enrich (Dec
 
 # [sequencing/not, idle seconds until death, bases remaining of current molecule, total bases sequenced, total target bases sequenced]
 standard_pore = np.array([False, int(idle_seconds_until_death[0]), 0, 0, 0], dtype=object)
+# [sequencing/not, idle seconds until death, bases remaining of current molecule, total bases sequenced, total target bases sequenced, target/non target]
+adaptive_pore = np.array([False, int(idle_seconds_until_death[0]), 0, 0, 0, False], dtype=object)
+
+standard_flow_cell = np.array([], dtype=object)
+adaptive_flow_cell = np.array([], dtype=object)
+
+flow_cell = np.array([], dtype=object)
 
 for second in range(runtime):
     if standard_pore[1] > 0:     
@@ -38,14 +48,6 @@ for second in range(runtime):
                 standard_pore[0] = False  # back to idle
                 standard_pore[2] = 0
         standard_pore[4] = int(round(standard_pore[3] * target_fraction))
-
-# Generate random numbers
-idle_seconds_until_death = np.random.normal(mean, std_dev, total_pores).astype(int)
-idle_seconds_until_death = np.clip(idle_seconds_until_death, 1, None)
-
-# [sequencing/not, idle seconds until death, bases remaining of current molecule, total bases sequenced, total target bases sequenced, target/non target]
-adaptive_pore = np.array([False, int(idle_seconds_until_death[0]), 0, 0, 0, False], dtype=object)
-print('adpative: ', adaptive_pore)
 
 for second in range(runtime):
     if adaptive_pore[1] > 0:
