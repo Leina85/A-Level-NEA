@@ -1,33 +1,47 @@
 import numpy as np
 
-# Specify parameters
-mean = 7472.521
-std_dev = 3024.544
-
-num_adaptive = 100
-num_standard = 100
-total_pores = num_standard + num_adaptive
-
+# Constant Parameters
+MEAN = 7472.521
+STD_DEV = 3024.544
 BPS = 450
 DNA_FOUND_CHANCE = 0.5632678551
 
-# Generate random numbers
-idle_seconds_until_death = np.random.normal(mean, std_dev, total_pores).astype(int)
-idle_seconds_until_death = np.clip(idle_seconds_until_death, 1, None)
-
+# User Inputted Parameters
 runtime = int(input('Enter runtime: '))
 avg_molecule_length = int(input('Enter Average Molecule Length: '))
 target_fraction = float(input('Enter fraction of target molecules to enrich (Decimal): '))
 
+# Pore Organisation
+num_adaptive = 100
+num_standard = 100
+total_pores = num_standard + num_adaptive
+
 # [sequencing/not, idle seconds until death, bases remaining of current molecule, total bases sequenced, total target bases sequenced]
-standard_pore = np.array([False, int(idle_seconds_until_death[0]), 0, 0, 0], dtype=object)
+standard_pore = np.array([False, 0, 0, 0, 0], dtype=object)
 # [sequencing/not, idle seconds until death, bases remaining of current molecule, total bases sequenced, total target bases sequenced, target/non target]
-adaptive_pore = np.array([False, int(idle_seconds_until_death[0]), 0, 0, 0, False], dtype=object)
+adaptive_pore = np.array([False, 0, 0, 0, 0, False], dtype=object)
+
+# Generate random numbers
+idle_seconds_until_death = np.random.normal(MEAN, STD_DEV, total_pores).astype(int)
+idle_seconds_until_death = np.clip(idle_seconds_until_death, 1, None)
 
 standard_flow_cell = np.array([], dtype=object)
 adaptive_flow_cell = np.array([], dtype=object)
 
-flow_cell = np.array([], dtype=object)
+# Fill standard flow cell
+for i in range(num_standard):
+    pore = standard_pore.copy()
+    pore[1] = int(idle_seconds_until_death[i])
+    standard_flow_cell = np.append(standard_flow_cell, [pore])
+
+# Fill adaptive flow cell
+for i in range(num_standard, total_pores):
+    pore = adaptive_pore.copy()
+    pore[1] = int(idle_seconds_until_death[i])
+    adaptive_flow_cell = np.append(adaptive_flow_cell, [pore])
+
+# Master flow cell structure
+flow_cell = np.array([standard_flow_cell, adaptive_flow_cell], dtype=object)
 
 for second in range(runtime):
     if standard_pore[1] > 0:     
