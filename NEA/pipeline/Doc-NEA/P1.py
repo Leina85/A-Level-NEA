@@ -25,20 +25,24 @@ adaptive_pore = np.array([False, 0, 0, 0, 0, False], dtype=object)
 idle_seconds_until_death = np.random.normal(MEAN, STD_DEV, total_pores).astype(int)
 idle_seconds_until_death = np.clip(idle_seconds_until_death, 1, None)
 
-standard_flow_cell = np.array([], dtype=object)
-adaptive_flow_cell = np.array([], dtype=object)
+standard_flow_cell = []
+adaptive_flow_cell = []
 
-# Fill standard flow cell
+# fill standard flow cell
 for i in range(num_standard):
     pore = standard_pore.copy()
     pore[1] = int(idle_seconds_until_death[i])
-    standard_flow_cell = np.append(standard_flow_cell, [pore])
+    standard_flow_cell.append(pore)
 
-# Fill adaptive flow cell
+# fill adaptive flow cell
 for i in range(num_standard, total_pores):
     pore = adaptive_pore.copy()
     pore[1] = int(idle_seconds_until_death[i])
-    adaptive_flow_cell = np.append(adaptive_flow_cell, [pore])
+    adaptive_flow_cell.append(pore)
+
+# convert to numpy arrays with object dtype to preserve structure
+standard_flow_cell = np.array(standard_flow_cell, dtype=object)
+adaptive_flow_cell = np.array(adaptive_flow_cell, dtype=object)
 
 # Master flow cell structure
 flow_cell = np.array([standard_flow_cell, adaptive_flow_cell], dtype=object)
