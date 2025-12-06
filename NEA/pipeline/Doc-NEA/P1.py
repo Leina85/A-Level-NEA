@@ -44,9 +44,6 @@ for i in range(num_standard, total_pores):
 standard_flow_cell = np.array(standard_flow_cell, dtype=object)
 adaptive_flow_cell = np.array(adaptive_flow_cell, dtype=object)
 
-# Master flow cell structure
-flow_cell = np.array([standard_flow_cell, adaptive_flow_cell], dtype=object)
-
 def generate_length():
     return int(max(1, round(np.random.normal(avg_molecule_length, np.sqrt(avg_molecule_length)))))
 
