@@ -45,56 +45,96 @@ flow_cell = np.array([standard_flow_cell, adaptive_flow_cell], dtype=object)
 
 def generate_length():
     return int(max(1, round(np.random.normal(avg_molecule_length, np.sqrt(avg_molecule_length)))))
-            
-for second in range(runtime):
-    if standard_pore[1] > 0:     
-        if not standard_pore[0]:  # idle
-            is_DNA_found = np.random.random() < DNA_FOUND_CHANCE
-            if is_DNA_found:  # found DNA
-                standard_pore[0] = True
-                standard_pore[2] = int(max(1, round(np.random.normal(avg_molecule_length, np.sqrt(avg_molecule_length)))))
-            else:
-                standard_pore[1] -= 1
-        else:  # currently sequencing
-            standard_pore[2] -= BPS
-            sequenced_now = BPS if standard_pore[2] >= 0 else (BPS + standard_pore[2])  # handle last partial read
-            standard_pore[3] += sequenced_now
-
-            # If molecule finished
-            if standard_pore[2] <= 0:
-                standard_pore[0] = False  # back to idle
-                standard_pore[2] = 0
-        standard_pore[4] = int(round(standard_pore[3] * target_fraction))
 
 for second in range(runtime):
-    if adaptive_pore[1] > 0:
-        if not adaptive_pore[0]:  # idle
-            is_DNA_found = np.random.random() < DNA_FOUND_CHANCE
-            if is_DNA_found:  # found DNA
-                adaptive_pore[0] = True
-                adaptive_pore[2] = int(max(1, round(np.random.normal(avg_molecule_length, np.sqrt(avg_molecule_length)))))
-                if np.random.random() < target_fraction:
-                    adaptive_pore[5] = True
+    
+    # for standard pores
+    for i in range(num_standard):
+        # loop through the 100 standard pores
+        current_pore = standard_flow_cell[i]
+        # seperates the array items into variables so the code is easier to follow than using indexes
+        is_seq, idle_left, bases_left, total_seq, total_target = current_pore
+        
+        # checks if pore is still alive
+        if idle_left > 0:
+
+            # if pore is idle
+            if not is_seq:
+                # check if DNA is found
+                if np.random.random() < DNA_FOUND_CHANCE:
+                    is_seq = True
+                    bases_left = generate_length()
                 else:
-                    adaptive_pore[5] = False
-            else:
-                adaptive_pore[1] -= 1
-        else:  # currently sequencing
-            adaptive_pore[2] -= BPS
-            sequenced_now = BPS if adaptive_pore[2] >= 0 else (BPS + adaptive_pore[2])  # handle last partial read
-            adaptive_pore[3] += sequenced_now
+                    # still idle so one less second until pore died
+                    idle_left -= 1
 
-            # If molecule finished
-            if adaptive_pore[2] <= 0:
-                adaptive_pore[0] = False  # back to idle
-                adaptive_pore[2] = 0
-            
-            if not adaptive_pore[5]:
-                # eject molecule (no longer sequencing)
-                adaptive_pore[0] = False
-                adaptive_pore[2] = 0
+            # if pore is already sequencing
             else:
-                adaptive_pore[4] += sequenced_now
+                # next 450 bases are sequenced
+                bases_left -= BPS
                 
-print('standard: ', standard_pore)
-print('adpative: ', adaptive_pore)
+                # adds the number of bases sequenced to the total (handles if the molecule had >450 bases remaining so the correct number is added)
+                sequenced_now = BPS if bases_left >= 0 else (BPS + bases_left)
+                total_seq += sequenced_now
+
+                # if molecule is finished sequencing (prevents negative values)
+                if bases_left <= 0:
+                    is_seq = False
+                    bases_left = 0
+
+            # estimate target base count using target fraction
+            total_target = int(round(total_seq * target_fraction))
+
+        # write updated state back into the flow cell back in the array format
+        standard_flow_cell[i] = np.array([is_seq, idle_left, bases_left, total_seq, total_target],dtype=object)
+
+    # for adaptive pores
+    for j in range(num_adaptive):
+
+        # loop through the 100 adaptive pores
+        pore = adaptive_flow_cell[j]
+        # seperates the array items into variables so the code is easier to follow than using indexes
+        is_seq, idle_left, bases_left, total_seq, total_target, is_target = pore
+
+        # checks if pore is still alive
+        if idle_left > 0:
+
+            # if pore is idle
+            if not is_seq:
+                # check if DNA is found
+                if np.random.random() < DNA_FOUND_CHANCE:
+                    is_seq = True
+                    bases_left = generate_length()
+                    # determine if molecule is target
+                    is_target = (np.random.random() < target_fraction)
+                else:
+                    # still idle so one less second until pore died
+                    idle_left -= 1
+
+            # if pore is already sequencing
+            else:
+                bases_left -= BPS
+                sequenced_now = BPS if bases_left >= 0 else (BPS + bases_left)
+                total_seq += sequenced_now
+
+                # if molecule is non target it is ejected
+                if not is_target:
+                    is_seq = False
+                    bases_left = 0
+                #if molecule is target then it is sequenced like the standard pore
+                else:
+                    total_target += sequenced_now
+
+                # if target molecule finishes sequencing bases left is 0
+                if bases_left <= 0:
+                    is_seq = False
+                    bases_left = 0
+
+        # write updated state back into the flow cell back in the array format
+        adaptive_flow_cell[j] = np.array(
+            [is_seq, idle_left, bases_left, total_seq, total_target, is_target],
+            dtype=object
+        )
+
+print(standard_flow_cell[0], adaptive_flow_cell[0])
+print(standard_flow_cell[99], adaptive_flow_cell[99])
