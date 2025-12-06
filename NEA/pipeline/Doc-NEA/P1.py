@@ -131,10 +131,7 @@ for second in range(runtime):
                     bases_left = 0
 
         # write updated state back into the flow cell back in the array format
-        adaptive_flow_cell[j] = np.array(
-            [is_seq, idle_left, bases_left, total_seq, total_target, is_target],
-            dtype=object
-        )
+        adaptive_flow_cell[j] = np.array([is_seq, idle_left, bases_left, total_seq, total_target, is_target],dtype=object)
 
 print(standard_flow_cell[0], adaptive_flow_cell[0])
 print(standard_flow_cell[99], adaptive_flow_cell[99])
