@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Constant Parameters
 MEAN = 7472.521
@@ -136,3 +137,23 @@ for second in range(runtime):
 
 print(standard_flow_cell[0], adaptive_flow_cell[0])
 print(standard_flow_cell[99], adaptive_flow_cell[99])
+
+# standard:
+x = []
+for i in range(num_standard):
+    x.append(standard_flow_cell[i, 1])
+
+plt.figure(figsize=(8, 5))
+plt.hist(x, bins=10, density=True, alpha=0.7, color='skyblue')
+plt.show()
+plt.savefig('standard_idle_till_death_dist.png')
+
+# adaptive:
+x = []
+for i in range(num_adaptive):
+    x.append(adaptive_flow_cell[i, 1])
+
+plt.figure(figsize=(8, 5))
+plt.hist(x, bins=10, density=True, alpha=0.7, color='skyblue')
+plt.show()
+plt.savefig('adaptive_idle_till_death_dist.png')
