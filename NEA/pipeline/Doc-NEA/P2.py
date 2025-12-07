@@ -18,8 +18,9 @@ COLOURS = {
     'title': '#333333'
 }
 
-INP_BTN_SIZE = (240, 64)
+DEFAULT_BTN_SIZE = (240, 64)
 NAV_BTN_SIZE = (200, 60)
+MAIN_BTN_SIZE = (300, 80)
 
 SCREENS = {
     0: {
@@ -64,7 +65,7 @@ def handleevents(active_btn, current_screen, screen_data):
             # Check which input button was clicked
             clicked_btn = None
             for inp_btn_key, inp_btn_data in screen_data[current_screen]['buttons'].items():
-                btnrect = pygame.Rect(0, 0, *INP_BTN_SIZE)
+                btnrect = pygame.Rect(0, 0, *DEFAULT_BTN_SIZE)
                 btnrect.center = inp_btn_data['pos']
                 if btnrect.collidepoint(event.pos):
                     clicked_btn = inp_btn_key
@@ -85,7 +86,7 @@ def handleevents(active_btn, current_screen, screen_data):
             elif event.unicode.isdigit() and len(current_text) < 7:
                 # Add digit to text (maximum 7 digits)
                 screen_data[current_screen]['buttons'][active_btn]['text'] = current_text + event.unicode
-                 
+
     return active_btn, current_screen
 
 def renderscreen(screen, font, activebtn, current_screen, screen_data):
@@ -109,7 +110,7 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
         isactive = (activebtn == inp_btn_key)
         
         # Draw button rectangle with appropriate colour
-        rect = pygame.Rect(0, 0, *INP_BTN_SIZE)
+        rect = pygame.Rect(0, 0, *DEFAULT_BTN_SIZE)
         rect.center = inp_btn_data['pos']
         colour = COLOURS['btnactive'] if isactive else COLOURS['btnpassive']
         pygame.draw.rect(screen, colour, rect)
@@ -149,7 +150,7 @@ def main():
         clock.tick(FPS)
 
 # ============================================================================
-# RUN APPLICATION
+# RUN SIMULATION
 # ============================================================================
 
 main()
