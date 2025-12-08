@@ -109,6 +109,7 @@ def handleevents(active_btn, current_screen, screen_data):
 def renderscreen(screen, font, activebtn, current_screen, screen_data):
     # Clear screen
     screen.fill(COLOURS['background'])
+    screen_info = screen_data[current_screen]
     
     # Draw title
     title_surf = font.render(screen_data[current_screen]['title'], True, COLOURS['title'])
@@ -116,11 +117,39 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
     screen.blit(title_surf, title_rect)
     
     # Draw navigation button
-    navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
-    pygame.draw.rect(screen, COLOURS['navbtn'], navbtn_rect)
-    textsurf = font.render(screen_data[current_screen]['navbtn']['text'], True, COLOURS['text'])
-    textrect = textsurf.get_rect(center=navbtn_rect.center)
-    screen.blit(textsurf, textrect)
+    if 'navbtn' in screen_info:
+        navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
+        pygame.draw.rect(screen, COLOURS['navbtn'], navbtn_rect)
+        textsurf = font.render(screen_info['navbtn']['text'], True, COLOURS['text'])
+        textrect = textsurf.get_rect(center=navbtn_rect.center)
+        screen.blit(textsurf, textrect)
+        
+    # Draw help text
+    if 'help_text' in screen_info:
+        help_font = pygame.font.Font(None, 40)
+        words = screen_info['help_text'].split(' ')
+        lines = []
+        current_line = []
+        max_width = SCREEN_WIDTH - 200
+        
+        for word in words:
+            test_line = ' '.join(current_line + [word])
+            test_surf = help_font.render(test_line, True, COLOURS['title'])
+            if test_surf.get_width() <= max_width:
+                current_line.append(word)
+            else:
+                if current_line:
+                    lines.append(' '.join(current_line))
+                current_line = [word]
+        if current_line:
+            lines.append(' '.join(current_line))
+        
+        y_offset = 250
+        for line in lines:
+            line_surf = help_font.render(line, True, COLOURS['title'])
+            line_rect = line_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
+            screen.blit(line_surf, line_rect)
+            y_offset += 50
     
     # Draw all input buttons for current screen
     for inp_btn_key, inp_btn_data in screen_data[current_screen]['buttons'].items():
