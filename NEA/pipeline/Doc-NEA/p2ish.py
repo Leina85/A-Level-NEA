@@ -27,9 +27,9 @@ SCREENS = {
         'title': 'Main Menu',
         'buttons': {
             'start': {'pos': (640, 360), 'text': 'Start', 'target': 'input_menu', 'size': MAIN_BTN_SIZE},
-            'help': {'pos': (1130, 60), 'text': 'Help', 'size': NAV_BTN_SIZE, 'color': 'navbtn', 'dropdown': True},
-            'help1': {'pos': (1130, 120), 'text': 'Help 1', 'target': 'help_menu_1', 'size': NAV_BTN_SIZE, 'color': 'navbtn', 'hidden': True},
-            'help2': {'pos': (1130, 180), 'text': 'Help 2', 'target': 'help_menu_2', 'size': NAV_BTN_SIZE, 'color': 'navbtn', 'hidden': True}
+            'help': {'pos': (1130, 60), 'text': 'Help', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'dropdown': True},
+            'help1': {'pos': (1130, 120), 'text': 'Help 1', 'target': 'help_menu_1', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'hidden': True},
+            'help2': {'pos': (1130, 180), 'text': 'Help 2', 'target': 'help_menu_2', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'hidden': True}
         },
         'dropdown_open': False
     },
@@ -187,9 +187,9 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             
             isactive = (activebtn == btn_key)
             
-            # Determine button color
-            if btn_data.get('color'):
-                colour = COLOURS[btn_data['color']]
+            # Determine button colour
+            if btn_data.get('colour'):
+                colour = COLOURS[btn_data['colour']]
             elif isactive:
                 colour = COLOURS['btnactive']
             else:
