@@ -23,22 +23,39 @@ NAV_BTN_SIZE = (200, 60)
 MAIN_BTN_SIZE = (300, 80)
 
 SCREENS = {
-    0: {
-        'title': 'Main Screen',
-        'navbtn': {'text': 'InpScreen', 'target': 1},
+    'main_menu': {
+        'title': 'Main Menu',
         'buttons': {
-            1: {'pos': (640, 260), 'text': ''},
-            2: {'pos': (640, 360), 'text': ''},
-            3: {'pos': (640, 460), 'text': ''}
+            'start': {'pos': (640, 360), 'text': 'Start', 'target': 'input_menu', 'size': MAIN_BTN_SIZE},
+            'help': {'pos': (1130, 60), 'text': 'Help', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'dropdown': True},
+            'help1': {'pos': (1130, 120), 'text': 'Help 1', 'target': 'help_menu_1', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'hidden': True},
+            'help2': {'pos': (1130, 180), 'text': 'Help 2', 'target': 'help_menu_2', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'hidden': True}
+        },
+        'dropdown_open': False
+    },
+    'help_menu_1': {
+        'title': 'Help Menu - Page 1',
+        'navbtn': {'text': 'Back', 'target': 'main_menu'},
+        'help_text': ''
+    },
+    'help_menu_2': {
+        'title': 'Help Menu - Page 2',
+        'navbtn': {'text': 'Back', 'target': 'main_menu'},
+        'help_text': ''
+    },
+    'input_menu': {
+        'title': 'Input Menu',
+        'navbtn': {'text': 'Back', 'target': 'main_menu'},
+        'buttons': {
+            1: {'pos': (640, 260), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True},
+            2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True},
+            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True},
+            'clear': {'pos': (640, 560), 'text': 'Clear All', 'size': MAIN_BTN_SIZE},
+            'start': {'pos': (640, 650), 'text': 'Start', 'target': 'start_menu', 'size': MAIN_BTN_SIZE}
         }
     },
-    1: {
-        'title': 'Input Screen',
-        'navbtn': {'text': 'Back', 'target': 0},
-        'buttons': {
-            1: {'pos': (640, 310), 'text': ''},
-            2: {'pos': (640, 410), 'text': ''}
-        }
+    'start_menu': {
+        'title': 'Start Menu'
     }
 }
 
@@ -119,29 +136,38 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
         displaytext = inp_btn_data['text'] if inp_btn_data['text'] or isactive else str(inp_btn_key)
         textsurf = font.render(displaytext, True, COLOURS['text'])
         textrect = textsurf.get_rect(midleft=(rect.x + 5, rect.centery))
-        screen.blit(textsurf, textrect)
+        screen.blit(textsurf, textrect) 
     
     pygame.display.update()
 
 def main():
-    # Initialise Pygame
     pygame.init()
     screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 70)
     
-    # Initialise local state
     active_btn = None
-    current_screen = 0
+    current_screen = 'main_menu'
     
-    # Copy screen data to preserve changes made by user
+    # Deep copy screen data
     screen_data = {}
     for screenid, screen_info in SCREENS.items():
-        screen_data[screenid] = {
-            'title': screen_info['title'],
-            'navbtn': screen_info['navbtn'].copy(),
-            'buttons': {k: v.copy() for k, v in screen_info['buttons'].items()}
-        }
+        screen_data[screenid] = {'title': screen_info['title']}
+        
+        for key in ['navbtn', 'help_text', 'dropdown_open']:
+            if key in screen_info:
+                screen_data[screenid][key] = screen_info[key] if key != 'navbtn' else screen_info[key].copy()
+        
+        # check if buttons present on screen
+        if 'buttons' in screen_info:
+            # empty dict for button copies
+            buttons_copy = {}
+            # loop through each button
+            for k, v in screen_info['buttons'].items():
+                # copy and store button data
+                button_data_copy = v.copy()
+                buttons_copy[k] = button_data_copy
+            screen_data[screenid]['buttons'] = buttons_copy  
     
     # Main game loop
     while True:
