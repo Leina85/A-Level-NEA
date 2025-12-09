@@ -138,11 +138,9 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             if test_surf.get_width() <= max_width:
                 current_line.append(word)
             else:
-                if current_line:
-                    lines.append(' '.join(current_line))
+                lines.append(' '.join(current_line))
                 current_line = [word]
-        if current_line:
-            lines.append(' '.join(current_line))
+        lines.append(' '.join(current_line))
         
         y_offset = 250
         for line in lines:
@@ -150,22 +148,38 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             line_rect = line_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
             screen.blit(line_surf, line_rect)
             y_offset += 50
-    
-    # Draw all input buttons for current screen
-    for inp_btn_key, inp_btn_data in screen_data[current_screen]['buttons'].items():
-        isactive = (activebtn == inp_btn_key)
-        
-        # Draw button rectangle with appropriate colour
-        rect = pygame.Rect(0, 0, *DEFAULT_BTN_SIZE)
-        rect.center = inp_btn_data['pos']
-        colour = COLOURS['btnactive'] if isactive else COLOURS['btnpassive']
-        pygame.draw.rect(screen, colour, rect)
-        
-        # Draw button text (show button number if empty and inactive)
-        displaytext = inp_btn_data['text'] if inp_btn_data['text'] or isactive else str(inp_btn_key)
-        textsurf = font.render(displaytext, True, COLOURS['text'])
-        textrect = textsurf.get_rect(midleft=(rect.x + 5, rect.centery))
-        screen.blit(textsurf, textrect) 
+
+    # Draw buttons
+    if 'buttons' in screen_info:
+        for btn_key, btn_data in screen_info['buttons'].items():
+            # Skip hidden buttons
+            if btn_data.get('hidden') and not screen_info.get('dropdown_open'):
+                continue
+            
+            isactive = (activebtn == btn_key)
+            
+            # Determine button colour
+            if btn_data.get('colour'):
+                colour = COLOURS[btn_data['colour']]
+            elif isactive:
+                colour = COLOURS['btnactive']
+            else:
+                colour = COLOURS['btnpassive']
+            
+            # Draw button
+            rect = pygame.Rect(0, 0, *btn_data['size'])
+            rect.center = btn_data['pos']
+            pygame.draw.rect(screen, colour, rect)
+            
+            # Draw button text
+            if btn_data.get('input'):
+                displaytext = btn_data['text'] if btn_data['text'] or isactive else str(btn_key)
+            else:
+                displaytext = btn_data['text']
+            
+            textsurf = font.render(displaytext, True, COLOURS['text'])
+            textrect = textsurf.get_rect(center=rect.center)
+            screen.blit(textsurf, textrect)
     
     pygame.display.update()
 
