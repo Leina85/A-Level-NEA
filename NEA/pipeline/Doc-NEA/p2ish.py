@@ -96,7 +96,8 @@ def handleevents(active_btn, current_screen, screen_data):
                             screen_info['dropdown_open'] = not screen_info.get('dropdown_open', False)
                             active_btn = None
                             break
-                        
+
+                        # ??is this already done above???
                         # Handle navigation
                         if 'target' in btn_data:
                             current_screen = btn_data['target']
