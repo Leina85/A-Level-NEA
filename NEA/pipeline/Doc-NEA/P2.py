@@ -64,45 +64,73 @@ SCREENS = {
 # ============================================================================
 
 def handleevents(active_btn, current_screen, screen_data):
-    # Process all events in the queue
     for event in pygame.event.get():
-        # Handle window close
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
             
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Check navigation button
-            navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
-            if navbtn_rect.collidepoint(event.pos):
-                current_screen = screen_data[current_screen]['navbtn']['target']
-                active_btn = None
-                continue
+            screen_info = screen_data[current_screen]
             
-            # Check which input button was clicked
-            clicked_btn = None
-            for inp_btn_key, inp_btn_data in screen_data[current_screen]['buttons'].items():
-                btnrect = pygame.Rect(0, 0, *DEFAULT_BTN_SIZE)
-                btnrect.center = inp_btn_data['pos']
-                if btnrect.collidepoint(event.pos):
-                    clicked_btn = inp_btn_key
-                    break
-            active_btn = clicked_btn
+            # Check navigation button
+            if 'navbtn' in screen_info:
+                navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
+                if navbtn_rect.collidepoint(event.pos):
+                    current_screen = screen_info['navbtn']['target']
+                    active_btn = None
+                    continue
+            
+            # Check screen buttons
+            if 'buttons' in screen_info:
+                for btn_key, btn_data in screen_info['buttons'].items():
+                    # Skip hidden buttons
+                    if btn_data.get('hidden') and not screen_info.get('dropdown_open'):
+                        continue
+                    
+                    btnrect = pygame.Rect(0, 0, *btn_data['size'])
+                    btnrect.center = btn_data['pos']
+                    
+                    if btnrect.collidepoint(event.pos):
+                        # Handle dropdown toggle
+                        if btn_data.get('dropdown'):
+                            screen_info['dropdown_open'] = not screen_info.get('dropdown_open', False)
+                            active_btn = None
+                            break
+                        
+                        # Handle navigation
+                        if 'target' in btn_data:
+                            current_screen = btn_data['target']
+                            active_btn = None
+                            if 'dropdown_open' in screen_info:
+                                screen_info['dropdown_open'] = False
+                            break
+                        
+                        # Handle clear button
+                        if btn_key == 'clear':
+                            for key, data in screen_info['buttons'].items():
+                                if data.get('input'):
+                                    data['text'] = ''
+                            active_btn = None
+                            break
+                        
+                        # Handle input buttons
+                        if btn_data.get('input'):
+                            active_btn = btn_key
+                            break
             
         elif event.type == pygame.KEYDOWN and active_btn:
-            # Handle text input for active button
-            current_text = screen_data[current_screen]['buttons'][active_btn]['text']
-            
-            if event.key == pygame.K_BACKSPACE:
-                # Remove last character
-                screen_data[current_screen]['buttons'][active_btn]['text'] = current_text[:-1]
-            elif event.key == pygame.K_RETURN and current_text:
-                # Print input when Enter is pressed
-                screen_name = screen_data[current_screen]['title']
-                print(f"Input for button {active_btn} on {screen_name}: {current_text}")
-            elif event.unicode.isdigit() and len(current_text) < 7:
-                # Add digit to text (maximum 7 digits)
-                screen_data[current_screen]['buttons'][active_btn]['text'] = current_text + event.unicode
+            screen_info = screen_data[current_screen]
+            if 'buttons' in screen_info and active_btn in screen_info['buttons']:
+                btn_data = screen_info['buttons'][active_btn]
+                if btn_data.get('input'):
+                    current_text = btn_data['text']
+                    
+                    if event.key == pygame.K_BACKSPACE:
+                        btn_data['text'] = current_text[:-1]
+                    elif event.key == pygame.K_RETURN and current_text:
+                        print(f"Input for button {active_btn} on {screen_info['title']}: {current_text}")
+                    elif event.unicode.isdigit() and len(current_text) < 7:
+                        btn_data['text'] = current_text + event.unicode
 
     return active_btn, current_screen
 
@@ -173,7 +201,10 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             
             # Draw button text
             if btn_data.get('input'):
-                displaytext = btn_data['text'] if btn_data['text'] or isactive else str(btn_key)
+                if btn_data['text'] or isactive:
+                    displaytext = btn_data['text']
+                else:
+                    displaytext = str(btn_key)
             else:
                 displaytext = btn_data['text']
             
