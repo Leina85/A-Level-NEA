@@ -99,6 +99,26 @@ def handleevents(active_btn, current_screen, screen_data):
                         
                         # Handle navigation
                         if 'target' in btn_data:
+                            # Check if Start button and validate inputs
+                            if btn_key == 'start':
+                                # Check if all input fields have values
+                                all_filled = True
+                                for key, data in screen_info['buttons'].items():
+                                    if data.get('input') and not data['text']:
+                                        all_filled = False
+                                        break
+                                
+                                # Only proceed if all inputs are filled
+                                if not all_filled:
+                                    break
+                                
+                                # Print all inputs
+                                print("\n=== Input Menu Values ===")
+                                for key, data in screen_info['buttons'].items():
+                                    if data.get('input'):
+                                        print(f"Input {key}: {data['text']}")
+                                print("=========================\n")
+                            
                             current_screen = btn_data['target']
                             active_btn = None
                             if 'dropdown_open' in screen_info:
@@ -127,8 +147,6 @@ def handleevents(active_btn, current_screen, screen_data):
                     
                     if event.key == pygame.K_BACKSPACE:
                         btn_data['text'] = current_text[:-1]
-                    elif event.key == pygame.K_RETURN and current_text:
-                        print(f"Input for button {active_btn} on {screen_info['title']}: {current_text}")
                     elif event.unicode.isdigit() and len(current_text) < 7:
                         btn_data['text'] = current_text + event.unicode
 
