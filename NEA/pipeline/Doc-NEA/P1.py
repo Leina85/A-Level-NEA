@@ -10,7 +10,9 @@ DNA_FOUND_CHANCE = 0.5632678551
 # User Inputted Parameters
 runtime = int(input('Enter runtime: '))
 avg_molecule_length = int(input('Enter Average Molecule Length: '))
-target_fraction = float(input('Enter fraction of target molecules to enrich (Decimal): '))
+target_fraction = int(input('Enter fraction of target molecules to enrich (Decimal): '))
+
+target_fraction = target_fraction/100
 
 # Pore Organisation
 num_adaptive = 100
