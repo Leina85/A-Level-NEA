@@ -47,9 +47,9 @@ SCREENS = {
         'title': 'Input Menu',
         'navbtn': {'text': 'Back', 'target': 'main_menu'},
         'buttons': {
-            1: {'pos': (640, 260), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True},
-            2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True},
-            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True},
+            1: {'pos': (640, 260), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Player 1'},
+            2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Player 2'},
+            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Player 3'},
             'clear': {'pos': (640, 560), 'text': 'Clear All', 'size': MAIN_BTN_SIZE},
             'start': {'pos': (640, 650), 'text': 'Start', 'target': 'start_menu', 'size': MAIN_BTN_SIZE}
         }
@@ -97,7 +97,7 @@ def handleevents(active_btn, current_screen, screen_data):
                             active_btn = None
                             break
                         
-                        # Handle navigation
+                        # Handle navigation (including Start button)
                         if 'target' in btn_data:
                             # Check if Start button and validate inputs
                             if btn_key == 'start':
@@ -116,7 +116,8 @@ def handleevents(active_btn, current_screen, screen_data):
                                 print("\n=== Input Menu Values ===")
                                 for key, data in screen_info['buttons'].items():
                                     if data.get('input'):
-                                        print(f"Input {key}: {data['text']}")
+                                        label = data.get('label', str(key))
+                                        print(f"{label}: {data['text']}")
                                 print("=========================\n")
                             
                             current_screen = btn_data['target']
@@ -222,7 +223,7 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                 if btn_data['text'] or isactive:
                     displaytext = btn_data['text']
                 else:
-                    displaytext = str(btn_key)
+                    displaytext = btn_data.get('label', str(btn_key))
             else:
                 displaytext = btn_data['text']
             
