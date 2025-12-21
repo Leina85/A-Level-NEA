@@ -6,7 +6,6 @@ import pygame
 import sys
 from P1 import simulation
 
-
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FPS = 60
@@ -52,13 +51,14 @@ SCREENS = {
             1: {'pos': (640, 260), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Runtime (s)'},
             2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule Length (Kb)'},
             3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases Target (Decimal)', 'max_length': 2},
-            'clear': {'pos': (640, 560), 'text': 'Clear All', 'size': MAIN_BTN_SIZE},
+            'default_values': {'pos': (640, 560), 'text': 'Apply Default Values', 'size': MAIN_BTN_SIZE},
             'start': {'pos': (640, 650), 'text': 'Start', 'target': 'start_menu', 'size': MAIN_BTN_SIZE}
         }
     },
     'start_menu': {
         'title': 'Start Menu',
-        'display_text': ''
+        'display_text': '',
+        'simulation_results': None
     }
 }
 
@@ -134,11 +134,14 @@ def handleevents(active_btn, current_screen, screen_data):
                                 screen_info['dropdown_open'] = False
                             break
                         
-                        # Handle clear button
-                        if btn_key == 'clear':
-                            for key, data in screen_info['buttons'].items():
-                                if data.get('input'):
-                                    data['text'] = ''
+                        # Handle default values button
+                        if btn_key == 'default_values':
+                            # runtime (2hrs)
+                            screen_info['buttons'][1]['text'] = '7200'
+                            # avg molecule length (10,000 bases)
+                            screen_info['buttons'][2]['text'] = '10000'
+                            # percentage of target bases (5%)
+                            screen_info['buttons'][3]['text'] = '5'
                             active_btn = None
                             break
                         
