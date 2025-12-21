@@ -49,13 +49,14 @@ SCREENS = {
         'buttons': {
             1: {'pos': (640, 260), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Runtime (s)'},
             2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule Length (Kb)'},
-            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases Target (Decimal)'},
+            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases Target (Decimal)', 'max_length': 2},
             'clear': {'pos': (640, 560), 'text': 'Clear All', 'size': MAIN_BTN_SIZE},
             'start': {'pos': (640, 650), 'text': 'Start', 'target': 'start_menu', 'size': MAIN_BTN_SIZE}
         }
     },
     'start_menu': {
-        'title': 'Start Menu'
+        'title': 'Start Menu',
+        'display_text': ''
     }
 }
 
@@ -114,11 +115,16 @@ def handleevents(active_btn, current_screen, screen_data):
                                 
                                 # Print all inputs
                                 print("\n=== Input Menu Values ===")
+                                string_1 = ""
                                 for key, data in screen_info['buttons'].items():
                                     if data.get('input'):
                                         label = data.get('label', str(key))
                                         print(f"{label}: {data['text']}")
+                                        string_1 += f"{label}: {data['text']}\n"
                                 print("=========================\n")
+                                
+                                # Store string_1 in start_menu for display
+                                screen_data['start_menu']['display_text'] = string_1
                             
                             current_screen = btn_data['target']
                             active_btn = None
@@ -145,10 +151,11 @@ def handleevents(active_btn, current_screen, screen_data):
                 btn_data = screen_info['buttons'][active_btn]
                 if btn_data.get('input'):
                     current_text = btn_data['text']
+                    max_length = btn_data.get('max_length', 7)
                     
                     if event.key == pygame.K_BACKSPACE:
                         btn_data['text'] = current_text[:-1]
-                    elif event.unicode.isdigit() and len(current_text) < 7:
+                    elif event.unicode.isdigit() and len(current_text) < max_length:
                         btn_data['text'] = current_text + event.unicode
 
     return active_btn, current_screen
@@ -195,6 +202,18 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             line_rect = line_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
             screen.blit(line_surf, line_rect)
             y_offset += 50
+    
+    # Draw display text (for start menu)
+    if 'display_text' in screen_info and screen_info['display_text']:
+        display_font = pygame.font.Font(None, 50)
+        text_lines = screen_info['display_text'].strip().split('\n')
+        y_offset = 250
+        
+        for line in text_lines:
+            line_surf = display_font.render(line, True, COLOURS['title'])
+            line_rect = line_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
+            screen.blit(line_surf, line_rect)
+            y_offset += 60
 
     # Draw buttons
     if 'buttons' in screen_info:
@@ -247,7 +266,7 @@ def main():
     for screenid, screen_info in SCREENS.items():
         screen_data[screenid] = {'title': screen_info['title']}
         
-        for key in ['navbtn', 'help_text', 'dropdown_open']:
+        for key in ['navbtn', 'help_text', 'dropdown_open', 'display_text']:
             if key in screen_info:
                 screen_data[screenid][key] = screen_info[key] if key != 'navbtn' else screen_info[key].copy()
         
