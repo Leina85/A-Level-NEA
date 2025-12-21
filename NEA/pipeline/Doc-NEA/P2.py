@@ -50,7 +50,7 @@ SCREENS = {
         'buttons': {
             1: {'pos': (640, 260), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Runtime (s)'},
             2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule Length (Kb)'},
-            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases Target (Decimal)', 'max_length': 2},
+            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases Target (Percentage)', 'max_length': 2},
             'default_values': {'pos': (640, 560), 'text': 'Apply Default Values', 'size': MAIN_BTN_SIZE},
             'start': {'pos': (640, 650), 'text': 'Start', 'target': 'start_menu', 'size': MAIN_BTN_SIZE}
         }
@@ -156,7 +156,7 @@ def handleevents(active_btn, current_screen, screen_data):
                 btn_data = screen_info['buttons'][active_btn]
                 if btn_data.get('input'):
                     current_text = btn_data['text']
-                    max_length = btn_data.get('max_length', 7)
+                    max_length = btn_data.get('max_length', 6)
                     
                     if event.key == pygame.K_BACKSPACE:
                         btn_data['text'] = current_text[:-1]
