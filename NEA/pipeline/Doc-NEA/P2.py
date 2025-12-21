@@ -47,9 +47,9 @@ SCREENS = {
         'title': 'Input Menu',
         'navbtn': {'text': 'Back', 'target': 'main_menu'},
         'buttons': {
-            1: {'pos': (640, 260), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Player 1'},
-            2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Player 2'},
-            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Player 3'},
+            1: {'pos': (640, 260), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Runtime (s)'},
+            2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule Length (Kb)'},
+            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases Target (Decimal)'},
             'clear': {'pos': (640, 560), 'text': 'Clear All', 'size': MAIN_BTN_SIZE},
             'start': {'pos': (640, 650), 'text': 'Start', 'target': 'start_menu', 'size': MAIN_BTN_SIZE}
         }
