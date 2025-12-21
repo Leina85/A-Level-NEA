@@ -34,7 +34,7 @@ def simulation(runtime, avg_molecule_length, target_fraction):
     adaptive_flow_cell = []
 
     # fill standard flow cell
-    for i in range(num_standard)
+    for i in range(num_standard):
         pore = standard_pore.copy()
         pore[1] = int(idle_seconds_until_death[i])
         standard_flow_cell.append(pore)
