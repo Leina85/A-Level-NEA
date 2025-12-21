@@ -7,8 +7,6 @@ import sys
 from P1 import simulation
 
 
-simulation(1, 2, 3)
-
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FPS = 60
