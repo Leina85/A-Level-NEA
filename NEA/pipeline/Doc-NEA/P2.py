@@ -4,8 +4,8 @@
 
 import pygame
 import sys
-
 from P1 import simulation
+
 
 simulation(1, 2, 3)
 
