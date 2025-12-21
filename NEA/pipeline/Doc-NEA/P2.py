@@ -75,7 +75,7 @@ def handleevents(active_btn, current_screen, screen_data):
         elif event.type == pygame.MOUSEBUTTONDOWN:
             screen_info = screen_data[current_screen]
             
-            # Check navigation button
+            # check navigation button
             if 'navbtn' in screen_info:
                 navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
                 if navbtn_rect.collidepoint(event.pos):
@@ -83,10 +83,10 @@ def handleevents(active_btn, current_screen, screen_data):
                     active_btn = None
                     continue
             
-            # Check screen buttons
+            # check screen buttons
             if 'buttons' in screen_info:
                 for btn_key, btn_data in screen_info['buttons'].items():
-                    # Skip hidden buttons
+                    # skip hidden buttons
                     if btn_data.get('hidden') and not screen_info.get('dropdown_open'):
                         continue
                     
@@ -94,39 +94,51 @@ def handleevents(active_btn, current_screen, screen_data):
                     btnrect.center = btn_data['pos']
                     
                     if btnrect.collidepoint(event.pos):
-                        # Handle dropdown toggle
+                        # handle dropdown toggle
                         if btn_data.get('dropdown'):
                             screen_info['dropdown_open'] = not screen_info.get('dropdown_open', False)
                             active_btn = None
                             break
                         
-                        # Handle navigation (including Start button)
+                        # handle navigation (including Start button)
                         if 'target' in btn_data:
-                            # Check if Start button and validate inputs
-                            if btn_key == 'start':
-                                # Check if all input fields have values
+                            # check if Start button and validate inputs
+                            if btn_key == 'start' and current_screen == 'input_menu':
+                                # check if all input fields have values
+                                input_menu = screen_data['input_menu']
                                 all_filled = True
-                                for key, data in screen_info['buttons'].items():
+                                
+                                # check all input fields are filled
+                                # underscore used here as the other piece of data in the pair is not used but required for the loop syntax
+                                for _, data in input_menu['buttons'].items():
                                     if data.get('input') and not data['text']:
                                         all_filled = False
                                         break
                                 
-                                # Only proceed if all inputs are filled
+                                # only proceed if all inputs are filled
                                 if not all_filled:
                                     break
                                 
-                                # Print all inputs
-                                print("\n=== Input Menu Values ===")
-                                string_1 = ""
-                                for key, data in screen_info['buttons'].items():
-                                    if data.get('input'):
-                                        label = data.get('label', str(key))
-                                        print(f"{label}: {data['text']}")
-                                        string_1 += f"{label}: {data['text']}\n"
-                                print("=========================\n")
+                                # save inputs to variables usable in the backend simulation
+                                runtime = int(input_menu['buttons'][1]['text'])
+                                avg_molecule_length = int(input_menu['buttons'][2]['text'])
+                                target_fraction = int(input_menu['buttons'][3]['text'])
                                 
-                                # Store string_1 in start_menu for display
-                                screen_data['start_menu']['display_text'] = string_1
+                                standard_results, adaptive_results = simulation(runtime, avg_molecule_length, target_fraction)
+                                
+                                # store results in start_menu
+                                screen_data['start_menu']['simulation_results'] = {
+                                    'standard': standard_results,
+                                    'adaptive': adaptive_results
+                                }
+                                
+                                # create display text
+                                display_text = f"Runtime: {runtime} s\n"
+                                display_text += f"Avg Molecule Length: {avg_molecule_length} Kb\n"
+                                display_text += f"Target Fraction: {target_fraction}%\n\n"
+                                display_text += "Simulation Complete!"
+                                
+                                screen_data['start_menu']['display_text'] = display_text
                             
                             current_screen = btn_data['target']
                             active_btn = None
@@ -134,7 +146,7 @@ def handleevents(active_btn, current_screen, screen_data):
                                 screen_info['dropdown_open'] = False
                             break
                         
-                        # Handle default values button
+                        # handle default values button
                         if btn_key == 'default_values':
                             # runtime (2hrs)
                             screen_info['buttons'][1]['text'] = '7200'
@@ -145,7 +157,7 @@ def handleevents(active_btn, current_screen, screen_data):
                             active_btn = None
                             break
                         
-                        # Handle input buttons
+                        # handle input buttons
                         if btn_data.get('input'):
                             active_btn = btn_key
                             break
@@ -166,16 +178,16 @@ def handleevents(active_btn, current_screen, screen_data):
     return active_btn, current_screen
 
 def renderscreen(screen, font, activebtn, current_screen, screen_data):
-    # Clear screen
+    # clear screen
     screen.fill(COLOURS['background'])
     screen_info = screen_data[current_screen]
     
-    # Draw title
+    # draw title
     title_surf = font.render(screen_data[current_screen]['title'], True, COLOURS['title'])
     title_rect = title_surf.get_rect(center=(SCREEN_WIDTH // 2, 100))
     screen.blit(title_surf, title_rect)
     
-    # Draw navigation button
+    # draw navigation button
     if 'navbtn' in screen_info:
         navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
         pygame.draw.rect(screen, COLOURS['navbtn'], navbtn_rect)
@@ -183,7 +195,7 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
         textrect = textsurf.get_rect(center=navbtn_rect.center)
         screen.blit(textsurf, textrect)
         
-    # Draw help text
+    # draw help text
     if 'help_text' in screen_info:
         help_font = pygame.font.Font(None, 40)
         words = screen_info['help_text'].split(' ')
@@ -207,20 +219,40 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             line_rect = line_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
             screen.blit(line_surf, line_rect)
             y_offset += 50
-    
-    # Draw display text (for start menu)
+
+    # raw display text and simulation results
     if 'display_text' in screen_info and screen_info['display_text']:
         display_font = pygame.font.Font(None, 50)
-        text_lines = screen_info['display_text'].strip().split('\n')
-        y_offset = 250
+        text_lines = screen_info['display_text'].split('\n')
+        y_offset = 200
         
+        # render all display text lines
         for line in text_lines:
             line_surf = display_font.render(line, True, COLOURS['title'])
             line_rect = line_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
             screen.blit(line_surf, line_rect)
             y_offset += 60
+        
+        # display simulation results arrays
+        if 'simulation_results' in screen_info and screen_info['simulation_results']:
+            results = screen_info['simulation_results']
+            result_font = pygame.font.Font(None, 30)
+            y_offset += 20
+            
+            # create list of result texts to display
+            result_texts = [
+                f"Standard Pore[0]: {results['standard'][0]}",
+                f"Adaptive Pore[0]: {results['adaptive'][0]}"
+            ]
+            
+            # render all result texts
+            for text in result_texts:
+                surf = result_font.render(text, True, COLOURS['title'])
+                rect = surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
+                screen.blit(surf, rect)
+                y_offset += 40
 
-    # Draw buttons
+    # draw buttons
     if 'buttons' in screen_info:
         for btn_key, btn_data in screen_info['buttons'].items():
             # Skip hidden buttons
@@ -229,7 +261,7 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             
             isactive = (activebtn == btn_key)
             
-            # Determine button colour
+            # determine button colour
             if btn_data.get('colour'):
                 colour = COLOURS[btn_data['colour']]
             elif isactive:
@@ -237,12 +269,12 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             else:
                 colour = COLOURS['btnpassive']
             
-            # Draw button
+            # draw button
             rect = pygame.Rect(0, 0, *btn_data['size'])
             rect.center = btn_data['pos']
             pygame.draw.rect(screen, colour, rect)
             
-            # Draw button text
+            # draw button text
             if btn_data.get('input'):
                 if btn_data['text'] or isactive:
                     displaytext = btn_data['text']
@@ -266,12 +298,12 @@ def main():
     active_btn = None
     current_screen = 'main_menu'
     
-    # Deep copy screen data
+    # deep copy screen data
     screen_data = {}
     for screenid, screen_info in SCREENS.items():
         screen_data[screenid] = {'title': screen_info['title']}
         
-        for key in ['navbtn', 'help_text', 'dropdown_open', 'display_text']:
+        for key in ['navbtn', 'help_text', 'dropdown_open', 'display_text', 'simulation_results']:
             if key in screen_info:
                 screen_data[screenid][key] = screen_info[key] if key != 'navbtn' else screen_info[key].copy()
         
@@ -286,7 +318,7 @@ def main():
                 buttons_copy[k] = button_data_copy
             screen_data[screenid]['buttons'] = buttons_copy  
     
-    # Main game loop
+    # main game loop
     while True:
         active_btn, current_screen = handleevents(active_btn, current_screen, screen_data)
         renderscreen(screen, font, active_btn, current_screen, screen_data)
