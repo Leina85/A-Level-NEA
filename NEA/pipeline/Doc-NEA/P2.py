@@ -342,7 +342,7 @@ def main():
     for screenid, screen_info in SCREENS.items():
         screen_data[screenid] = {'title': screen_info['title']}
         
-        for key in ['navbtn', 'help_text', 'dropdown_open', 'display_text', 'simulation_results']:
+        for key in ['navbtn', 'help_text', 'dropdown_open', 'display_text', 'simulation_results', 'simulation_running', 'current_second', 'total_runtime']:
             if key in screen_info:
                 screen_data[screenid][key] = screen_info[key] if key != 'navbtn' else screen_info[key].copy()
         
