@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from P2 import progress_callback
 
 def simulation(runtime, avg_molecule_length, target_fraction):
     
@@ -138,6 +139,10 @@ def simulation(runtime, avg_molecule_length, target_fraction):
             # write updated state back into the flow cell back in the array format
             adaptive_flow_cell[j] = np.array([is_seq, idle_left, bases_left, total_seq, total_target, is_target],dtype=object)
 
+        # Send progress update at regular intervals
+        if second % update_interval == 0 or second == runtime - 1:
+            progress_callback(second + 1, runtime, standard_flow_cell.copy(), adaptive_flow_cell.copy())
+        
     print(standard_flow_cell[0], adaptive_flow_cell[0])
     return standard_flow_cell, adaptive_flow_cell
 
