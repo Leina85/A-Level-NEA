@@ -76,6 +76,15 @@ simulation_state = {
 # CORE FUNCTIONS
 # ============================================================================
 
+def progress_callback(current_second, total_runtime, standard_data, adaptive_data):
+    # callback function that updates the simulation state
+    simulation_state['current_second'] = current_second
+    simulation_state['total_runtime'] = total_runtime
+    simulation_state['standard_results'] = standard_data
+    simulation_state['adaptive_results'] = adaptive_data
+
+
+
 def handleevents(active_btn, current_screen, screen_data):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
