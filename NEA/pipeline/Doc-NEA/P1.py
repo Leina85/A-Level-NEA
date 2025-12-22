@@ -8,12 +8,9 @@ def simulation(runtime, avg_molecule_length, target_fraction):
     STD_DEV = 3024.544
     BPS = 450
     DNA_FOUND_CHANCE = 0.5632678551
-
-    # User Inputted Parameters
-    #runtime = int(input('Enter runtime: '))
-    #avg_molecule_length = int(input('Enter Average Molecule Length: '))
-    #target_fraction = int(input('Enter fraction of target molecules to enrich (Decimal): '))
-
+    INTERVAL_NUM = 100
+    
+    #convert percentage from input into decimal form
     target_fraction = target_fraction/100
 
     # Pore Organisation
@@ -51,6 +48,8 @@ def simulation(runtime, avg_molecule_length, target_fraction):
 
     def generate_length():
         return int(max(1, round(np.random.normal(avg_molecule_length, np.sqrt(avg_molecule_length)))))
+
+    update_interval = max(1, runtime // INTERVAL_NUM)
 
     for second in range(runtime):
         
