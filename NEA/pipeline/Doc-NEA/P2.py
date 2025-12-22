@@ -59,7 +59,10 @@ SCREENS = {
     'start_menu': {
         'title': 'Start Menu',
         'display_text': '',
-        'simulation_results': None
+        'simulation_results': None,
+        'simulation_running': False,
+        'current_second': 0,
+        'total_runtime': 0
     }
 }
 
@@ -78,11 +81,28 @@ simulation_state = {
 
 def progress_callback(current_second, total_runtime, standard_data, adaptive_data):
     # callback function that updates the simulation state
-    simulation_state['current_second'] = current_second
-    simulation_state['total_runtime'] = total_runtime
-    simulation_state['standard_results'] = standard_data
-    simulation_state['adaptive_results'] = adaptive_data
+    simulation_state.update({
+        'current_second': current_second,
+        'total_runtime': total_runtime,
+        'standard_results': standard_data,
+        'adaptive_results': adaptive_data
+    })
 
+
+def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_data):
+    simulation_state['running'] = True
+    
+    # Run simulation and capture results
+    result = simulation(runtime, avg_molecule_length, target_fraction, progress_callback)
+    
+    # Store final results
+    screen_data['start_menu']['simulation_results'] = {
+        'standard': result[0],
+        'adaptive': result[1]
+    }
+    
+    # Always reset running state
+    simulation_state['running'] = False
 
 
 def handleevents(active_btn, current_screen, screen_data):
