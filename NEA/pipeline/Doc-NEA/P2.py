@@ -4,6 +4,7 @@
 
 import pygame
 import sys
+import threading
 from P1 import simulation
 
 SCREEN_WIDTH = 1280
@@ -61,6 +62,15 @@ SCREENS = {
         'simulation_results': None
     }
 }
+
+simulation_state = {
+    'running': False,
+    'current_second': 0,
+    'total_runtime': 0,
+    'standard_results': None,
+    'adaptive_results': None
+}
+
 
 # ============================================================================
 # CORE FUNCTIONS
