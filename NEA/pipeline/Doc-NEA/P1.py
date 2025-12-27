@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from P2 import progress_callback
 
 def simulation(runtime, avg_molecule_length, target_fraction, progress_callback):
     
