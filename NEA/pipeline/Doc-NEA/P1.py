@@ -8,7 +8,6 @@ def simulation(runtime, avg_molecule_length, target_fraction, progress_callback)
     STD_DEV = 3024.544
     BPS = 450
     DNA_FOUND_CHANCE = 0.5632678551
-    INTERVAL_NUM = 100
     
     #convert percentage from input into decimal form
     target_fraction = target_fraction/100
@@ -49,7 +48,16 @@ def simulation(runtime, avg_molecule_length, target_fraction, progress_callback)
     def generate_length():
         return int(max(1, round(np.random.normal(avg_molecule_length, np.sqrt(avg_molecule_length)))))
 
-    update_interval = max(1, runtime // INTERVAL_NUM)
+    if runtime < 100:
+        num_updates = runtime  # Every second
+    elif runtime < 1000:
+        num_updates = 100
+    elif runtime < 10000:
+        num_updates = 200
+    else:
+        num_updates = 800  # Every 20 seconds for very long runs
+        
+    update_interval = max(1, runtime // num_updates)
 
     for second in range(runtime):
         
