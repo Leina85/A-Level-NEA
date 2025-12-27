@@ -7,9 +7,15 @@ import sys
 import threading
 from P1 import simulation
 
+# screen constants
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FPS = 60
+
+# pore grid constants
+GRID_SIZE = 10
+SQUARE_SIZE = 18
+SQUARE_GAP = 2
 
 COLOURS = {
     'btnactive': '#4A7090',
@@ -17,7 +23,10 @@ COLOURS = {
     'navbtn': '#2E5266',
     'background': '#F2F2F2',
     'text': '#F2F2F2',
-    'title': '#333333'
+    'title': '#333333',
+    'sequencing': '#AFD9AE',
+    'idle': '#FFC107',
+    'dead': '#F88378'
 }
 
 DEFAULT_BTN_SIZE = (240, 64)
@@ -88,6 +97,44 @@ def progress_callback(current_second, total_runtime, standard_data, adaptive_dat
         'adaptive_results': adaptive_data
     })
 
+#####
+def draw_pore_grid(screen, flow_cell, x_start, y_start, title):
+    """Draw a 10x10 grid representing pore states"""
+    title_font = pygame.font.Font(None, 40)
+    
+    # Draw title above grid
+    title_surf = title_font.render(title, True, pygame.Color(COLOURS['title']))
+    title_rect = title_surf.get_rect(center=(x_start + (GRID_SIZE * (SQUARE_SIZE + SQUARE_GAP)) // 2, y_start - 30))
+    screen.blit(title_surf, title_rect)
+    
+    # Draw 10x10 grid
+    for i in range(100):
+        if flow_cell is None:
+            continue
+            
+        row = i // GRID_SIZE
+        col = i % GRID_SIZE
+        pore = flow_cell[i]
+        
+        # Determine color based on pore state
+        # pore[0] = is_sequencing, pore[1] = idle_seconds_left
+        if pore[1] == 0:  # Dead
+            color = pygame.Color(COLOURS['dead'])
+        elif pore[0]:  # Sequencing
+            color = pygame.Color(COLOURS['sequencing'])
+        else:  # Idle
+            color = pygame.Color(COLOURS['idle'])
+        
+        # Calculate position
+        x = x_start + col * (SQUARE_SIZE + SQUARE_GAP)
+        y = y_start + row * (SQUARE_SIZE + SQUARE_GAP)
+        
+        # Draw filled square
+        pygame.draw.rect(screen, color, (x, y, SQUARE_SIZE, SQUARE_SIZE))
+        
+        # Draw border
+        pygame.draw.rect(screen, pygame.Color('#333333'), (x, y, SQUARE_SIZE, SQUARE_SIZE), 1)
+#####
 
 def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_data):
     simulation_state['running'] = True
@@ -310,22 +357,39 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                 screen.blit(complete_surf, complete_rect)
                 y_offset += 60
         
-        # Display current pore data
+        # Display current pore data as grids
             if simulation_state['standard_results'] is not None and simulation_state['adaptive_results'] is not None:
-                y_offset += 10
+                y_offset += 20
                 
+                # Calculate grid positions (side by side)
+                grid_total_width = GRID_SIZE * (SQUARE_SIZE + SQUARE_GAP)
+                spacing = 100  # Space between grids
+                
+                # Standard grid on left
+                std_x = (SCREEN_WIDTH // 2) - grid_total_width - (spacing // 2)
+                # Adaptive grid on right
+                adp_x = (SCREEN_WIDTH // 2) + (spacing // 2)
+                
+                # Draw both grids
+                draw_pore_grid(screen, simulation_state['standard_results'], std_x, y_offset, "Standard Pores")
+                draw_pore_grid(screen, simulation_state['adaptive_results'], adp_x, y_offset, "Adaptive Pores")
+                
+                y_offset += grid_total_width + 60
+                
+                # Still show text summary below grids
                 standard_pore = simulation_state['standard_results'][0]
                 adaptive_pore = simulation_state['adaptive_results'][0]
                 
-                # Standard pore data
-                std_text = f"Standard Pore[0] - Total Bases: {standard_pore[3]:,} | Target Bases: {standard_pore[4]:,}"
+                result_font = pygame.font.Font(None, 30)
+                
+                # Summary statistics
+                std_text = f"Standard: Total Bases: {standard_pore[3]:,} | Target: {standard_pore[4]:,}"
                 std_surf = result_font.render(std_text, True, COLOURS['title'])
                 std_rect = std_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
                 screen.blit(std_surf, std_rect)
-                y_offset += 45
+                y_offset += 40
                 
-                # Adaptive pore data
-                adp_text = f"Adaptive Pore[0] - Total Bases: {adaptive_pore[3]:,} | Target Bases: {adaptive_pore[4]:,}"
+                adp_text = f"Adaptive: Total Bases: {adaptive_pore[3]:,} | Target: {adaptive_pore[4]:,}"
                 adp_surf = result_font.render(adp_text, True, COLOURS['title'])
                 adp_rect = adp_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
                 screen.blit(adp_surf, adp_rect)
