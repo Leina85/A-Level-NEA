@@ -259,37 +259,76 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             screen.blit(line_surf, line_rect)
             y_offset += 50
 
-    # raw display text and simulation results
-    if 'display_text' in screen_info and screen_info['display_text']:
+    # draw display text and simulation results
+    if current_screen == 'start_menu':
         display_font = pygame.font.Font(None, 50)
-        text_lines = screen_info['display_text'].split('\n')
+        result_font = pygame.font.Font(None, 35)
         y_offset = 200
         
-        # render all display text lines
-        for line in text_lines:
-            line_surf = display_font.render(line, True, COLOURS['title'])
-            line_rect = line_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
-            screen.blit(line_surf, line_rect)
-            y_offset += 60
-        
-        # display simulation results arrays
-        if 'simulation_results' in screen_info and screen_info['simulation_results']:
-            results = screen_info['simulation_results']
-            result_font = pygame.font.Font(None, 30)
+    # Show input parameters
+        if 'display_text' in screen_info and screen_info['display_text']:
+            text_lines = screen_info['display_text'].split('\n')
+            
+            for line in text_lines[:4]:  # First 4 lines are parameters + status
+                line_surf = display_font.render(line, True, COLOURS['title'])
+                line_rect = line_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
+                screen.blit(line_surf, line_rect)
+                y_offset += 60
+    
+    # Show real-time progress if simulation is running
+        if simulation_state['running'] or simulation_state['standard_results'] is not None:
             y_offset += 20
             
-            # create list of result texts to display
-            result_texts = [
-                f"Standard Pore[0]: {results['standard'][0]}",
-                f"Adaptive Pore[0]: {results['adaptive'][0]}"
-            ]
-            
-            # render all result texts
-            for text in result_texts:
-                surf = result_font.render(text, True, COLOURS['title'])
-                rect = surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
-                screen.blit(surf, rect)
-                y_offset += 40
+            # Progress indicator
+            if simulation_state['running']:
+                progress_text = f"Progress: {simulation_state['current_second']}/{simulation_state['total_runtime']} seconds"
+                progress_surf = display_font.render(progress_text, True, COLOURS['title'])
+                progress_rect = progress_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
+                screen.blit(progress_surf, progress_rect)
+                y_offset += 60
+                
+                # Progress bar
+                bar_width = 600
+                bar_height = 30
+                bar_x = (SCREEN_WIDTH - bar_width) // 2
+                bar_y = y_offset
+                
+                # Background bar
+                pygame.draw.rect(screen, COLOURS['btnpassive'], (bar_x, bar_y, bar_width, bar_height))
+                
+                # Progress bar
+                if simulation_state['total_runtime'] > 0:
+                    progress = simulation_state['current_second'] / simulation_state['total_runtime']
+                    fill_width = int(bar_width * progress)
+                    pygame.draw.rect(screen, COLOURS['btnactive'], (bar_x, bar_y, fill_width, bar_height))
+                
+                y_offset += 60
+            else:
+                complete_text = "Simulation Complete!"
+                complete_surf = display_font.render(complete_text, True, COLOURS['title'])
+                complete_rect = complete_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
+                screen.blit(complete_surf, complete_rect)
+                y_offset += 60
+        
+        # Display current pore data
+            if simulation_state['standard_results'] is not None and simulation_state['adaptive_results'] is not None:
+                y_offset += 10
+                
+                standard_pore = simulation_state['standard_results'][0]
+                adaptive_pore = simulation_state['adaptive_results'][0]
+                
+                # Standard pore data
+                std_text = f"Standard Pore[0] - Total Bases: {standard_pore[3]:,} | Target Bases: {standard_pore[4]:,}"
+                std_surf = result_font.render(std_text, True, COLOURS['title'])
+                std_rect = std_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
+                screen.blit(std_surf, std_rect)
+                y_offset += 45
+                
+                # Adaptive pore data
+                adp_text = f"Adaptive Pore[0] - Total Bases: {adaptive_pore[3]:,} | Target Bases: {adaptive_pore[4]:,}"
+                adp_surf = result_font.render(adp_text, True, COLOURS['title'])
+                adp_rect = adp_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
+                screen.blit(adp_surf, adp_rect)
 
     # draw buttons
     if 'buttons' in screen_info:
