@@ -163,21 +163,21 @@ def handleevents(active_btn, current_screen, screen_data):
                                 avg_molecule_length = int(input_menu['buttons'][2]['text'])
                                 target_fraction = int(input_menu['buttons'][3]['text'])
                                 
-                                standard_results, adaptive_results = simulation(runtime, avg_molecule_length, target_fraction)
-                                
-                                # store results in start_menu
-                                screen_data['start_menu']['simulation_results'] = {
-                                    'standard': standard_results,
-                                    'adaptive': adaptive_results
-                                }
-                                
                                 # create display text
                                 display_text = f"Runtime: {runtime} s\n"
                                 display_text += f"Avg Molecule Length: {avg_molecule_length} Kb\n"
                                 display_text += f"Target Fraction: {target_fraction}%\n\n"
-                                display_text += "Simulation Complete!"
+                                display_text += "Simulation Running..."
                                 
                                 screen_data['start_menu']['display_text'] = display_text
+                                
+                                # Start simulation in separate thread
+                                sim_thread = threading.Thread(
+                                    target=run_simulation_thread,
+                                    args=(runtime, avg_molecule_length, target_fraction, screen_data)
+                                )
+                                sim_thread.daemon = True
+                                sim_thread.start()
                             
                             current_screen = btn_data['target']
                             active_btn = None
