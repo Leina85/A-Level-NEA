@@ -26,11 +26,24 @@ COLOURS = {
     'title': '#333333',
     'sequencing': '#AFD9AE',
     'idle': '#FFC107',
-    'dead': '#F88378'
+    'dead': '#F88378',
+    'outline': '#000000'
+}
+
+# font size constants
+FONT_SIZES = {
+    'title': 70,
+    'nav': 70,
+    'help': 28,
+    'button_small': 36,
+    'display': 50,
+    'result': 35,
+    'grid_title': 40,
+    'summary': 30
 }
 
 DEFAULT_BTN_SIZE = (240, 64)
-NAV_BTN_SIZE = (200, 60)
+NAV_BTN_SIZE = (240, 70)
 MAIN_BTN_SIZE = (300, 80)
 
 SCREENS = {
@@ -39,8 +52,8 @@ SCREENS = {
         'buttons': {
             'start': {'pos': (640, 360), 'text': 'Start', 'target': 'input_menu', 'size': MAIN_BTN_SIZE},
             'help': {'pos': (1130, 60), 'text': 'Help', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'dropdown': True},
-            'help1': {'pos': (1130, 120), 'text': 'What is Nanopore Sequencing?', 'target': 'help_menu_1', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'hidden': True},
-            'help2': {'pos': (1130, 180), 'text': 'What Values Should I input?', 'target': 'help_menu_2', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'hidden': True}
+            'help1': {'pos': (1130, 135), 'text': 'What is Nanopore\nSequencing?', 'target': 'help_menu_1', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'hidden': True},
+            'help2': {'pos': (1130, 210), 'text': 'What Values\nShould I input?', 'target': 'help_menu_2', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'hidden': True}
         },
         'dropdown_open': False
     },
@@ -59,8 +72,8 @@ SCREENS = {
         'navbtn': {'text': 'Back', 'target': 'main_menu'},
         'buttons': {
             1: {'pos': (640, 260), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Runtime (s)'},
-            2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule Length (Kb)'},
-            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases Target (Percentage)', 'max_length': 2},
+            2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule\nLength (Kb)'},
+            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases\nTarget (Percentage)', 'max_length': 2},
             'default_values': {'pos': (640, 560), 'text': 'Apply Default Values', 'size': MAIN_BTN_SIZE},
             'start': {'pos': (640, 650), 'text': 'Start', 'target': 'start_menu', 'size': MAIN_BTN_SIZE}
         }
@@ -97,7 +110,6 @@ def progress_callback(current_second, total_runtime, standard_data, adaptive_dat
         'adaptive_results': adaptive_data
     })
 
-#####
 def draw_pore_grid(screen, flow_cell, x_start, y_start, title):
     """Draw a 10x10 grid representing pore states"""
     title_font = pygame.font.Font(None, 40)
@@ -109,9 +121,6 @@ def draw_pore_grid(screen, flow_cell, x_start, y_start, title):
     
     # Draw 10x10 grid
     for i in range(100):
-        if flow_cell is None:
-            continue
-            
         row = i // GRID_SIZE
         col = i % GRID_SIZE
         pore = flow_cell[i]
@@ -134,7 +143,6 @@ def draw_pore_grid(screen, flow_cell, x_start, y_start, title):
         
         # Draw border
         pygame.draw.rect(screen, pygame.Color('#333333'), (x, y, SQUARE_SIZE, SQUARE_SIZE), 1)
-#####
 
 def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_data):
     simulation_state['running'] = True
@@ -283,11 +291,11 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
         
     # draw help text
     if 'help_text' in screen_info:
-        help_font = pygame.font.Font(None, 40)
+        help_font = pygame.font.Font(None, 28)
         words = screen_info['help_text'].split(' ')
         lines = []
         current_line = []
-        max_width = SCREEN_WIDTH - 200
+        max_width = SCREEN_WIDTH - 50
         
         for word in words:
             test_line = ' '.join(current_line + [word])
@@ -299,12 +307,12 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                 current_line = [word]
         lines.append(' '.join(current_line))
         
-        y_offset = 250
+        y_offset = 180  # Moved up from 250
         for line in lines:
             line_surf = help_font.render(line, True, COLOURS['title'])
             line_rect = line_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
             screen.blit(line_surf, line_rect)
-            y_offset += 50
+            y_offset += 40  # Reduced from 50 to 40
 
     # draw display text and simulation results
     if current_screen == 'start_menu':
@@ -370,29 +378,77 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                 # Adaptive grid on right
                 adp_x = (SCREEN_WIDTH // 2) + (spacing // 2)
                 
-                # Draw both grids
+                # draw both grids
                 draw_pore_grid(screen, simulation_state['standard_results'], std_x, y_offset, "Standard Pores")
                 draw_pore_grid(screen, simulation_state['adaptive_results'], adp_x, y_offset, "Adaptive Pores")
                 
-                y_offset += grid_total_width + 60
+                ############
+                # calculate summary statistics across ALL pores
+                standard_flow_cell = simulation_state['standard_results']
+                adaptive_flow_cell = simulation_state['adaptive_results']
                 
-                # Still show text summary below grids
-                standard_pore = simulation_state['standard_results'][0]
-                adaptive_pore = simulation_state['adaptive_results'][0]
+                # initialize counters
+                std_total_bases = 0
+                std_target_bases = 0
+                std_sequencing_count = 0
+                std_idle_count = 0
+                std_dead_count = 0
                 
+                adp_total_bases = 0
+                adp_target_bases = 0
+                adp_sequencing_count = 0
+                adp_idle_count = 0
+                adp_dead_count = 0
+                
+                # sum up statistics for standard pores
+                for i in range(100):
+                    pore = standard_flow_cell[i]
+                    std_total_bases += pore[3]  # total bases sequenced
+                    std_target_bases += pore[4]  # target bases sequenced
+                    
+                    # count pore states
+                    if pore[1] == 0:  # dead
+                        std_dead_count += 1
+                    elif pore[0]:  # sequencing
+                        std_sequencing_count += 1
+                    else:  # idle
+                        std_idle_count += 1
+                
+                # sum up statistics for adaptive pores
+                for i in range(100):
+                    pore = adaptive_flow_cell[i]
+                    adp_total_bases += pore[3]  # total bases sequenced
+                    adp_target_bases += pore[4]  # target bases sequenced
+                    
+                    # Count pore states
+                    if pore[1] == 0:  # dead
+                        adp_dead_count += 1
+                    elif pore[0]:  # sequencing
+                        adp_sequencing_count += 1
+                    else:  # idle
+                        adp_idle_count += 1
+                
+                # Display summary statistics
                 result_font = pygame.font.Font(None, 30)
                 
-                # Summary statistics
-                std_text = f"Standard: Total Bases: {standard_pore[3]:,} | Target: {standard_pore[4]:,}"
-                std_surf = result_font.render(std_text, True, COLOURS['title'])
-                std_rect = std_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
-                screen.blit(std_surf, std_rect)
-                y_offset += 40
+                # Display summary statistics
+                result_font = pygame.font.Font(None, 30)
                 
-                adp_text = f"Adaptive: Total Bases: {adaptive_pore[3]:,} | Target: {adaptive_pore[4]:,}"
-                adp_surf = result_font.render(adp_text, True, COLOURS['title'])
-                adp_rect = adp_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
-                screen.blit(adp_surf, adp_rect)
+                # Helper function to draw centered text
+                def draw_text(text, y):
+                    surf = result_font.render(text, True, COLOURS['title'])
+                    screen.blit(surf, surf.get_rect(center=(SCREEN_WIDTH // 2, y)))
+                
+                # Standard pores summary
+                draw_text(f"Standard - Total Bases: {std_total_bases:,} | Target Bases: {std_target_bases:,}", y_offset)
+                y_offset += 35
+                draw_text(f"Standard - Sequencing: {std_sequencing_count} | Idle: {std_idle_count} | Dead: {std_dead_count}", y_offset)
+                y_offset += 50
+                
+                # Adaptive pores summary
+                draw_text(f"Adaptive - Total Bases: {adp_total_bases:,} | Target Bases: {adp_target_bases:,}", y_offset)
+                y_offset += 35
+                draw_text(f"Adaptive - Sequencing: {adp_sequencing_count} | Idle: {adp_idle_count} | Dead: {adp_dead_count}", y_offset)
 
     # draw buttons
     if 'buttons' in screen_info:
@@ -425,9 +481,26 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             else:
                 displaytext = btn_data['text']
             
-            textsurf = font.render(displaytext, True, COLOURS['text'])
-            textrect = textsurf.get_rect(center=rect.center)
-            screen.blit(textsurf, textrect)
+            # Handle multi-line text
+            if '\n' in displaytext:
+                lines = displaytext.split('\n')
+                line_font = pygame.font.Font(None, 36)
+                line_spacing = 28
+                total_height = len(lines) * line_spacing
+                start_y = rect.centery - (total_height // 2) + (line_spacing // 2) - 2
+                
+                for i, line in enumerate(lines):
+                    textsurf = line_font.render(line, True, COLOURS['text'])
+                    textrect = textsurf.get_rect(center=(rect.centerx, start_y + i * line_spacing))
+                    screen.blit(textsurf, textrect)
+            else:
+                textsurf = font.render(displaytext, True, COLOURS['text'])
+                textrect = textsurf.get_rect(center=rect.center)
+                screen.blit(textsurf, textrect)
+            
+            # Draw black outline for nav buttons (help dropdown buttons)
+            if btn_data.get('colour') == 'navbtn':
+                pygame.draw.rect(screen, COLOURS['outline'], rect, 3)
     
     pygame.display.update()
 
