@@ -112,46 +112,49 @@ def progress_callback(current_second, total_runtime, standard_data, adaptive_dat
     })
 
 def draw_pore_grid(screen, flow_cell, x_start, y_start, title):
-    """Draw a 10x10 grid representing pore states"""
+    # draw a 10x10 grid representing pore states
     title_font = pygame.font.Font(None, FONT_SIZES['grid_title'])
     
-    # Draw title above grid
+    # draw title above grid
     title_surf = title_font.render(title, True, pygame.Color(COLOURS['title']))
     title_rect = title_surf.get_rect(center=(x_start + (GRID_SIZE * (SQUARE_SIZE + SQUARE_GAP)) // 2, y_start - 30))
     screen.blit(title_surf, title_rect)
     
-    # Draw 10x10 grid
+    # draw 10x10 grid
     for i in range(100):
         row = i // GRID_SIZE
         col = i % GRID_SIZE
         pore = flow_cell[i]
         
-        # Determine color based on pore state
+        # determine color based on pore state
         # pore[0] = is_sequencing, pore[1] = idle_seconds_left
-        if pore[1] == 0:  # Dead
+        if pore[1] == 0:
+            # dead
             color = pygame.Color(COLOURS['dead'])
-        elif pore[0]:  # Sequencing
+        elif pore[0]: 
+            # sequencing
             color = pygame.Color(COLOURS['sequencing'])
-        else:  # Idle
+        else:
+            # idle
             color = pygame.Color(COLOURS['idle'])
         
-        # Calculate position
+        # calculate position
         x = x_start + col * (SQUARE_SIZE + SQUARE_GAP)
         y = y_start + row * (SQUARE_SIZE + SQUARE_GAP)
         
-        # Draw filled square
+        # draw filled square
         pygame.draw.rect(screen, color, (x, y, SQUARE_SIZE, SQUARE_SIZE))
         
-        # Draw border
+        # draw border
         pygame.draw.rect(screen, pygame.Color('#333333'), (x, y, SQUARE_SIZE, SQUARE_SIZE), 1)
 
 def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_data):
     simulation_state['running'] = True
     
-    # Run simulation and capture results
+    # run simulation and capture results
     result = simulation(runtime, avg_molecule_length, target_fraction, progress_callback)
     
-    # Store final results
+    # store final results
     screen_data['start_menu']['simulation_results'] = {
         'standard': result[0],
         'adaptive': result[1]
@@ -373,16 +376,19 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                 
                 # Calculate grid positions (side by side)
                 grid_total_width = GRID_SIZE * (SQUARE_SIZE + SQUARE_GAP)
-                spacing = 100  # Space between grids
+                # space between grids
+                spacing = 500
                 
-                # Standard grid on left
+                # Margine from left
                 std_x = (SCREEN_WIDTH // 2) - grid_total_width - (spacing // 2)
-                # Adaptive grid on right
+                # Margin from right
                 adp_x = (SCREEN_WIDTH // 2) + (spacing // 2)
                 
+                y_pos = 150
+                
                 # draw both grids
-                draw_pore_grid(screen, simulation_state['standard_results'], std_x, y_offset, "Standard Pores")
-                draw_pore_grid(screen, simulation_state['adaptive_results'], adp_x, y_offset, "Adaptive Pores")
+                draw_pore_grid(screen, simulation_state['standard_results'], std_x, y_pos, "Standard Pores")
+                draw_pore_grid(screen, simulation_state['adaptive_results'], adp_x, y_pos, "Adaptive Pores")
                 
                 # calculate summary statistics across ALL pores
                 standard_flow_cell = simulation_state['standard_results']
@@ -433,20 +439,22 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                 summary_font = pygame.font.Font(None, FONT_SIZES['summary'])
                 
                 # Helper function to draw centered text
-                def draw_text(text, y):
+                def draw_text(text, centre_x, y):
                     surf = summary_font.render(text, True, COLOURS['title'])
-                    screen.blit(surf, surf.get_rect(center=(SCREEN_WIDTH // 2, y)))
+                    screen.blit(surf, surf.get_rect(center=(centre_x, y)))
                 
                 # Standard pores summary
-                draw_text(f"Standard - Total Bases: {std_total_bases:,} | Target Bases: {std_target_bases:,}", y_offset)
+                std_center_x = std_x + grid_total_width // 2
+                draw_text(f"Standard - Total Bases: {std_total_bases:,} | Target Bases: {std_target_bases:,}", std_center_x, y_offset)
                 y_offset += 35
-                draw_text(f"Standard - Sequencing: {std_sequencing_count} | Idle: {std_idle_count} | Dead: {std_dead_count}", y_offset)
+                draw_text(f"Standard - Sequencing: {std_sequencing_count} | Idle: {std_idle_count} | Dead: {std_dead_count}", std_center_x, y_offset)
                 y_offset += 50
                 
                 # Adaptive pores summary
-                draw_text(f"Adaptive - Total Bases: {adp_total_bases:,} | Target Bases: {adp_target_bases:,}", y_offset)
+                adp_center_x = adp_x + grid_total_width // 2
+                draw_text(f"Adaptive - Total Bases: {adp_total_bases:,} | Target Bases: {adp_target_bases:,}", adp_center_x, y_offset)
                 y_offset += 35
-                draw_text(f"Adaptive - Sequencing: {adp_sequencing_count} | Idle: {adp_idle_count} | Dead: {adp_dead_count}", y_offset)
+                draw_text(f"Adaptive - Sequencing: {adp_sequencing_count} | Idle: {adp_idle_count} | Dead: {adp_dead_count}", adp_center_x, y_offset)
 
     # draw buttons
     if 'buttons' in screen_info:
