@@ -28,6 +28,43 @@ def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_
     # Always reset running state
     simulation_state['running'] = False
 
+def draw_pore_grid(screen, flow_cell, x_start, y_start, title):
+    # draw a 10x10 grid representing pore states
+    title_font = pygame.font.Font(None, FONT_SIZES['grid_title'])
+    
+    # draw title above grid
+    title_surf = title_font.render(title, True, pygame.Color(COLOURS['title']))
+    title_rect = title_surf.get_rect(center=(x_start + (GRID_SIZE * (SQUARE_SIZE + SQUARE_GAP)) // 2, y_start - 30))
+    screen.blit(title_surf, title_rect)
+    
+    # draw 10x10 grid
+    for i in range(100):
+        row = i // GRID_SIZE
+        col = i % GRID_SIZE
+        pore = flow_cell[i]
+        
+        # determine color based on pore state
+        # pore[0] = is_sequencing, pore[1] = idle_seconds_left
+        if pore[1] == 0:
+            # dead
+            color = pygame.Color(COLOURS['dead'])
+        elif pore[0]: 
+            # sequencing
+            color = pygame.Color(COLOURS['sequencing'])
+        else:
+            # idle
+            color = pygame.Color(COLOURS['idle'])
+        
+        # calculate position
+        x = x_start + col * (SQUARE_SIZE + SQUARE_GAP)
+        y = y_start + row * (SQUARE_SIZE + SQUARE_GAP)
+        
+        # draw filled square
+        pygame.draw.rect(screen, color, (x, y, SQUARE_SIZE, SQUARE_SIZE))
+        
+        # draw border
+        pygame.draw.rect(screen, pygame.Color('#333333'), (x, y, SQUARE_SIZE, SQUARE_SIZE), 1)
+
 def handleevents(active_btn, current_screen, screen_data):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
