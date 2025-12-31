@@ -37,10 +37,10 @@ FONT_SIZES = {
     'help': 28,
     'button_small': 36,
     'button_large': 50,
-    'display': 50,
+    'display': 36,
     'result': 35,
     'grid_title': 40,
-    'summary': 30
+    'summary': 28
 }
 
 DEFAULT_BTN_SIZE = (240, 64)
@@ -345,7 +345,7 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                 progress_surf = display_font.render(progress_text, True, COLOURS['title'])
                 progress_rect = progress_surf.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
                 screen.blit(progress_surf, progress_rect)
-                y_offset += 60
+                y_offset += 170
                 
                 # Progress bar
                 bar_width = 600
@@ -427,7 +427,7 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                     adp_total_bases += pore[3]  # total bases sequenced
                     adp_target_bases += pore[4]  # target bases sequenced
                     
-                    # Count pore states
+                    # count pore states
                     if pore[1] == 0:  # dead
                         adp_dead_count += 1
                     elif pore[0]:  # sequencing
@@ -435,26 +435,33 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                     else:  # idle
                         adp_idle_count += 1
                 
-                # Display summary statistics
+                # display summary statistics
                 summary_font = pygame.font.Font(None, FONT_SIZES['summary'])
                 
-                # Helper function to draw centered text
+                # helper function to draw centered text
                 def draw_text(text, centre_x, y):
                     surf = summary_font.render(text, True, COLOURS['title'])
                     screen.blit(surf, surf.get_rect(center=(centre_x, y)))
-                
-                # Standard pores summary
-                std_center_x = std_x + grid_total_width // 2
-                draw_text(f"Standard - Total Bases: {std_total_bases:,} | Target Bases: {std_target_bases:,}", std_center_x, y_offset)
-                y_offset += 35
-                draw_text(f"Standard - Sequencing: {std_sequencing_count} | Idle: {std_idle_count} | Dead: {std_dead_count}", std_center_x, y_offset)
-                y_offset += 50
-                
+
+                grid_height = GRID_SIZE * (SQUARE_SIZE + SQUARE_GAP)
+                summary_start_y = y_pos + grid_height + 30
+
+                std_center_x = std_x + grid_total_width // 2 + 115
+                adp_center_x = adp_x + grid_total_width // 2 - 115
+
+                std_y = summary_start_y
+                adp_y = summary_start_y
+
+                # standard pores summary
+                draw_text(f"Standard - Total Bases: {std_total_bases:,} | Target Bases: {std_target_bases:,}", std_center_x, std_y)
+                std_y += 35
+                draw_text(f"Standard - Sequencing: {std_sequencing_count} | Idle: {std_idle_count} | Dead: {std_dead_count}", std_center_x, std_y)
+
                 # Adaptive pores summary
-                adp_center_x = adp_x + grid_total_width // 2
-                draw_text(f"Adaptive - Total Bases: {adp_total_bases:,} | Target Bases: {adp_target_bases:,}", adp_center_x, y_offset)
-                y_offset += 35
-                draw_text(f"Adaptive - Sequencing: {adp_sequencing_count} | Idle: {adp_idle_count} | Dead: {adp_dead_count}", adp_center_x, y_offset)
+                draw_text(f"Adaptive - Total Bases: {adp_total_bases:,} | Target Bases: {adp_target_bases:,}", adp_center_x, adp_y)
+                adp_y += 35
+                draw_text(f"Adaptive - Sequencing: {adp_sequencing_count} | Idle: {adp_idle_count} | Dead: {adp_dead_count}", adp_center_x, adp_y)
+
 
     # draw buttons
     if 'buttons' in screen_info:
