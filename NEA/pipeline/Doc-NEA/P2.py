@@ -14,7 +14,7 @@ FPS = 60
 
 # pore grid constants
 GRID_SIZE = 10
-SQUARE_SIZE = 18
+SQUARE_SIZE = 35
 SQUARE_GAP = 2
 
 COLOURS = {
@@ -36,6 +36,7 @@ FONT_SIZES = {
     'nav': 70,
     'help': 28,
     'button_small': 36,
+    'button_large': 50,
     'display': 50,
     'result': 35,
     'grid_title': 40,
@@ -50,7 +51,7 @@ SCREENS = {
     'main_menu': {
         'title': 'Main Menu',
         'buttons': {
-            'start': {'pos': (640, 360), 'text': 'Start', 'target': 'input_menu', 'size': MAIN_BTN_SIZE},
+            'start': {'pos': (640, 360), 'text': 'Start', 'target': 'input_menu', 'size': MAIN_BTN_SIZE, 'font_size': 'button_large'},
             'help': {'pos': (1130, 60), 'text': 'Help', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'dropdown': True},
             'help1': {'pos': (1130, 135), 'text': 'What is Nanopore\nSequencing?', 'target': 'help_menu_1', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'hidden': True},
             'help2': {'pos': (1130, 210), 'text': 'What Values\nShould I input?', 'target': 'help_menu_2', 'size': NAV_BTN_SIZE, 'colour': 'navbtn', 'hidden': True}
@@ -71,11 +72,11 @@ SCREENS = {
         'title': 'Input Menu',
         'navbtn': {'text': 'Back', 'target': 'main_menu'},
         'buttons': {
-            1: {'pos': (640, 260), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Runtime (s)'},
-            2: {'pos': (640, 360), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule\nLength (Kb)'},
-            3: {'pos': (640, 460), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases\nTarget (Percentage)', 'max_length': 2},
-            'default_values': {'pos': (640, 560), 'text': 'Apply Default Values', 'size': MAIN_BTN_SIZE},
-            'start': {'pos': (640, 650), 'text': 'Start', 'target': 'start_menu', 'size': MAIN_BTN_SIZE}
+            1: {'pos': (640, 240), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Runtime (s)'},
+            2: {'pos': (640, 340), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule\nLength (Kb)'},
+            3: {'pos': (640, 440), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases\nTarget (Percentage)', 'max_length': 2},
+            'default_values': {'pos': (640, 540), 'text': 'Apply Default Values', 'size': MAIN_BTN_SIZE},
+            'start': {'pos': (640, 640), 'text': 'Start', 'target': 'start_menu', 'size': MAIN_BTN_SIZE}
         }
     },
     'start_menu': {
@@ -112,7 +113,7 @@ def progress_callback(current_second, total_runtime, standard_data, adaptive_dat
 
 def draw_pore_grid(screen, flow_cell, x_start, y_start, title):
     """Draw a 10x10 grid representing pore states"""
-    title_font = pygame.font.Font(None, 40)
+    title_font = pygame.font.Font(None, FONT_SIZES['grid_title'])
     
     # Draw title above grid
     title_surf = title_font.render(title, True, pygame.Color(COLOURS['title']))
@@ -283,19 +284,20 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
     
     # draw navigation button
     if 'navbtn' in screen_info:
+        nav_font = pygame.font.Font(None, FONT_SIZES['nav'])
         navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
         pygame.draw.rect(screen, COLOURS['navbtn'], navbtn_rect)
-        textsurf = font.render(screen_info['navbtn']['text'], True, COLOURS['text'])
+        textsurf = nav_font.render(screen_info['navbtn']['text'], True, COLOURS['text'])
         textrect = textsurf.get_rect(center=navbtn_rect.center)
         screen.blit(textsurf, textrect)
         
     # draw help text
     if 'help_text' in screen_info:
-        help_font = pygame.font.Font(None, 28)
+        help_font = pygame.font.Font(None, FONT_SIZES['help'])
         words = screen_info['help_text'].split(' ')
         lines = []
         current_line = []
-        max_width = SCREEN_WIDTH - 50
+        max_width = SCREEN_WIDTH - 20
         
         for word in words:
             test_line = ' '.join(current_line + [word])
@@ -316,8 +318,8 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
 
     # draw display text and simulation results
     if current_screen == 'start_menu':
-        display_font = pygame.font.Font(None, 50)
-        result_font = pygame.font.Font(None, 35)
+        display_font = pygame.font.Font(None, FONT_SIZES['display'])
+        result_font = pygame.font.Font(None, FONT_SIZES['result'])
         y_offset = 200
         
     # Show input parameters
@@ -382,7 +384,6 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                 draw_pore_grid(screen, simulation_state['standard_results'], std_x, y_offset, "Standard Pores")
                 draw_pore_grid(screen, simulation_state['adaptive_results'], adp_x, y_offset, "Adaptive Pores")
                 
-                ############
                 # calculate summary statistics across ALL pores
                 standard_flow_cell = simulation_state['standard_results']
                 adaptive_flow_cell = simulation_state['adaptive_results']
@@ -429,14 +430,11 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
                         adp_idle_count += 1
                 
                 # Display summary statistics
-                result_font = pygame.font.Font(None, 30)
-                
-                # Display summary statistics
-                result_font = pygame.font.Font(None, 30)
+                summary_font = pygame.font.Font(None, FONT_SIZES['summary'])
                 
                 # Helper function to draw centered text
                 def draw_text(text, y):
-                    surf = result_font.render(text, True, COLOURS['title'])
+                    surf = summary_font.render(text, True, COLOURS['title'])
                     screen.blit(surf, surf.get_rect(center=(SCREEN_WIDTH // 2, y)))
                 
                 # Standard pores summary
@@ -452,6 +450,7 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
 
     # draw buttons
     if 'buttons' in screen_info:
+        button_font = pygame.font.Font(None, FONT_SIZES['button_small'])
         for btn_key, btn_data in screen_info['buttons'].items():
             # Skip hidden buttons
             if btn_data.get('hidden') and not screen_info.get('dropdown_open'):
@@ -472,6 +471,12 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             rect.center = btn_data['pos']
             pygame.draw.rect(screen, colour, rect)
             
+            # Use custom font size if specified, otherwise use default
+            if btn_data.get('font_size'):
+                current_button_font = pygame.font.Font(None, FONT_SIZES[btn_data['font_size']])
+            else:
+                current_button_font = button_font
+            
             # draw button text
             if btn_data.get('input'):
                 if btn_data['text'] or isactive:
@@ -484,17 +489,16 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data):
             # Handle multi-line text
             if '\n' in displaytext:
                 lines = displaytext.split('\n')
-                line_font = pygame.font.Font(None, 36)
                 line_spacing = 28
                 total_height = len(lines) * line_spacing
                 start_y = rect.centery - (total_height // 2) + (line_spacing // 2) - 2
                 
                 for i, line in enumerate(lines):
-                    textsurf = line_font.render(line, True, COLOURS['text'])
+                    textsurf = current_button_font.render(line, True, COLOURS['text'])
                     textrect = textsurf.get_rect(center=(rect.centerx, start_y + i * line_spacing))
                     screen.blit(textsurf, textrect)
             else:
-                textsurf = font.render(displaytext, True, COLOURS['text'])
+                textsurf = current_button_font.render(displaytext, True, COLOURS['text'])
                 textrect = textsurf.get_rect(center=rect.center)
                 screen.blit(textsurf, textrect)
             
@@ -508,7 +512,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
     clock = pygame.time.Clock()
-    font = pygame.font.Font(None, 70)
+    font = pygame.font.Font(None, FONT_SIZES['title'])
     
     active_btn = None
     current_screen = 'main_menu'
