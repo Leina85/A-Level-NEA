@@ -12,6 +12,21 @@ def progress_callback(current_second, total_runtime, standard_data, adaptive_dat
         'standard_results': standard_data,
         'adaptive_results': adaptive_data
     })
+    
+def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_data):
+    simulation_state['running'] = True
+    
+    # run simulation and capture results
+    result = simulation(runtime, avg_molecule_length, target_fraction, progress_callback)
+    
+    # store final results
+    screen_data['start_menu']['simulation_results'] = {
+        'standard': result[0],
+        'adaptive': result[1]
+    }
+    
+    # Always reset running state
+    simulation_state['running'] = False
 
 def handleevents(active_btn, current_screen, screen_data):
     for event in pygame.event.get():
