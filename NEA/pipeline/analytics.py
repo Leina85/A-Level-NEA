@@ -86,7 +86,7 @@ def display_graph(graph_data, total_runtime):
 
     # --- graph 3: dead, sequencing and idle standard pores ---
     plt.figure(figsize=(5, 5))
-    plt.plot(time_points, std_dead, label='Dead', color='#F88378', linewidth = 0.8)
+    plt.plot(time_points, std_dead, label='Dead', color='#F88378')
     plt.plot(time_points, std_seq, label='Sequencing', color='#AFD9AE', linewidth = 0.8)
     plt.plot(time_points, std_idle, label='Idle', color='#FFC107', linewidth = 0.8)
     plt.xlabel('Time (s)')
@@ -102,7 +102,7 @@ def display_graph(graph_data, total_runtime):
     
     # --- graph 4: dead, sequencing and idle adaptive pores ---
     plt.figure(figsize=(5, 5))
-    plt.plot(time_points, adp_dead, label='Dead', color='#F88378', linewidth = 0.8)
+    plt.plot(time_points, adp_dead, label='Dead', color='#F88378')
     plt.plot(time_points, adp_seq, label='Sequencing', color='#AFD9AE', linewidth = 0.8)
     plt.plot(time_points, adp_idle, label='Idle', color='#FFC107', linewidth = 0.8)
     plt.xlabel('Time (s)')
