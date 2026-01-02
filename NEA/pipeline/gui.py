@@ -453,7 +453,9 @@ def main():
         'std_alive_pores': [],
         'adp_alive_pores': [],
         'std_sequencing_pore_num': [],
-        'adp_sequencing_pore_num': []
+        'adp_sequencing_pore_num': [],
+        'std_idle_pore_num': [],
+        'adp_idle_pore_num': [],
     }
     
     # deep copy screen data
