@@ -79,11 +79,3 @@ SCREENS = {
         'total_runtime': 0
     }
 }
-
-simulation_state = {
-    'running': False,
-    'current_second': 0,
-    'total_runtime': 0,
-    'standard_results': None,
-    'adaptive_results': None
-}

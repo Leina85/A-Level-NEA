@@ -3,8 +3,9 @@ import sys
 import threading
 from configuration import *
 from simulation import simulation
+from analytics import *
 
-def progress_callback(current_second, total_runtime, standard_data, adaptive_data):
+def progress_callback(current_second, total_runtime, standard_data, adaptive_data, simulation_state, graph_data):
     # callback function that updates the simulation state
     simulation_state.update({
         'current_second': current_second,
@@ -13,11 +14,13 @@ def progress_callback(current_second, total_runtime, standard_data, adaptive_dat
         'adaptive_results': adaptive_data
     })
     
-def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_data):
+    add_data_point(graph_data, current_second, standard_data, adaptive_data)
+    
+def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_data, simulation_state, graph_data):
     simulation_state['running'] = True
     
     # run simulation and capture results
-    result = simulation(runtime, avg_molecule_length, target_fraction, progress_callback)
+    result = simulation(runtime, avg_molecule_length, target_fraction, progress_callback, simulation_state, graph_data)
     
     # store final results
     screen_data['start_menu']['simulation_results'] = {
@@ -25,7 +28,7 @@ def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_
         'adaptive': result[1]
     }
     
-    # Always reset running state
+    # always reset running state
     simulation_state['running'] = False
 
 def draw_pore_grid(screen, flow_cell, x_start, y_start, title):
@@ -65,7 +68,7 @@ def draw_pore_grid(screen, flow_cell, x_start, y_start, title):
         # draw border
         pygame.draw.rect(screen, pygame.Color('#333333'), (x, y, SQUARE_SIZE, SQUARE_SIZE), 1)
 
-def handleevents(active_btn, current_screen, screen_data):
+def handleevents(active_btn, current_screen, screen_data, simulation_state, graph_data):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -134,7 +137,7 @@ def handleevents(active_btn, current_screen, screen_data):
                                 # Start simulation in separate thread
                                 sim_thread = threading.Thread(
                                     target=run_simulation_thread,
-                                    args=(runtime, avg_molecule_length, target_fraction, screen_data)
+                                    args=(runtime, avg_molecule_length, target_fraction, screen_data, simulation_state, graph_data)
                                 )
                                 sim_thread.daemon = True
                                 sim_thread.start()
@@ -176,7 +179,7 @@ def handleevents(active_btn, current_screen, screen_data):
 
     return active_btn, current_screen
 
-def renderscreen(screen, font, activebtn, current_screen, screen_data):
+def renderscreen(screen, font, activebtn, current_screen, screen_data, simulation_state, graph_data):
     # clear screen
     screen.fill(COLOURS['background'])
     screen_info = screen_data[current_screen]
@@ -433,6 +436,26 @@ def main():
     active_btn = None
     current_screen = 'main_menu'
     
+    simulation_state = {
+    'running': False,
+    'current_second': 0,
+    'total_runtime': 0,
+    'standard_results': None,
+    'adaptive_results': None
+    }
+    
+    graph_data = {
+        'time_points': [],
+        'std_total_bases': [],
+        'std_target_bases': [],
+        'adp_total_bases': [],
+        'adp_target_bases': [],
+        'std_alive_pores': [],
+        'adp_alive_pores': [],
+        'std_sequencing_pore_num': [],
+        'adp_sequencing_pore_num': []
+    }
+    
     # deep copy screen data
     screen_data = {}
     for screenid, screen_info in SCREENS.items():
@@ -455,6 +478,6 @@ def main():
     
     # main game loop
     while True:
-        active_btn, current_screen = handleevents(active_btn, current_screen, screen_data)
-        renderscreen(screen, font, active_btn, current_screen, screen_data)
+        active_btn, current_screen = handleevents(active_btn, current_screen, screen_data, simulation_state, graph_data)
+        renderscreen(screen, font, active_btn, current_screen, screen_data, simulation_state, graph_data)
         clock.tick(FPS)
