@@ -51,7 +51,7 @@ def display_graph(graph_data, total_runtime):
     adp_alive = graph_data['adp_alive_pores']
 
     # --- Graph 1: Total bases sequenced ---
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(5, 5))
     plt.plot(time_points, std_total_bases, label='Standard', color='blue')
     plt.plot(time_points, adp_total_bases, label='Adaptive', color='red')
     plt.xlabel('Time (s)')
@@ -64,7 +64,7 @@ def display_graph(graph_data, total_runtime):
     plt.show()
 
     # --- Graph 2: Target bases sequenced ---
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(5, 5))
     plt.plot(time_points, std_target_bases, label='Standard', color='blue')
     plt.plot(time_points, adp_target_bases, label='Adaptive', color='red')
     plt.xlabel('Time (s)')
@@ -77,7 +77,7 @@ def display_graph(graph_data, total_runtime):
     plt.show()
 
     # --- Graph 3: Alive pores ---
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(5, 5))
     plt.plot(time_points, std_alive, label='Standard', color='blue')
     plt.plot(time_points, adp_alive, label='Adaptive', color='red')
     plt.xlabel('Time (s)')
