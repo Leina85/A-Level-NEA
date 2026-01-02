@@ -450,12 +450,12 @@ def main():
         'std_target_bases': [],
         'adp_total_bases': [],
         'adp_target_bases': [],
-        'std_alive_pores': [],
-        'adp_alive_pores': [],
-        'std_sequencing_pore_num': [],
-        'adp_sequencing_pore_num': [],
-        'std_idle_pore_num': [],
-        'adp_idle_pore_num': [],
+        'std_dead_pores': [],
+        'adp_dead_pores': [],
+        'std_sequencing_pores': [],
+        'adp_sequencing_pores': [],
+        'std_idle_pores': [],
+        'adp_idle_pores': [],
     }
     
     # deep copy screen data

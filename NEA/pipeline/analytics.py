@@ -16,9 +16,9 @@ def add_data_point(graph_data, second, standard_flow_cell, adaptive_flow_cell):
     
     graph_data['std_total_bases'].append(std_total)
     graph_data['std_target_bases'].append(std_target)
-    graph_data['std_alive_pores'].append(std_dead)
-    graph_data['std_sequencing_pore_num'].append(std_seq)
-    graph_data['std_idle_pore_num'].append(std_idle)
+    graph_data['std_dead_pores'].append(std_dead)
+    graph_data['std_sequencing_pores'].append(std_seq)
+    graph_data['std_idle_pores'].append(std_idle)
     
     # adaptive pores
     adp_total = sum(pore[3] for pore in adaptive_flow_cell)
@@ -29,16 +29,16 @@ def add_data_point(graph_data, second, standard_flow_cell, adaptive_flow_cell):
     
     graph_data['adp_total_bases'].append(adp_total)
     graph_data['adp_target_bases'].append(adp_target)
-    graph_data['adp_alive_pores'].append(adp_dead)
-    graph_data['adp_sequencing_pore_num'].append(adp_seq)
-    graph_data['std_idle_pore_num'].append(adp_idle)
+    graph_data['adp_dead_pores'].append(adp_dead)
+    graph_data['adp_sequencing_pores'].append(adp_seq)
+    graph_data['adp_idle_pores'].append(adp_idle)
 
 def display_graph(graph_data, total_runtime):
     
     #Plots three separate graphs showing standard and adaptive pore data over time.
     #Graph 1: Total bases sequenced
     #Graph 2: Target bases sequenced
-    #Graph 3: Alive pores
+    #Graph 3: Dead, Sequencing and Idle pores
 
     # extract data from graph_data
     time_points = graph_data['time_points']
@@ -49,10 +49,10 @@ def display_graph(graph_data, total_runtime):
     std_target_bases = graph_data['std_target_bases']
     adp_target_bases = graph_data['adp_target_bases']
 
-    std_dead = graph_data['std_alive_pores']
+    std_dead = graph_data['std_dead_pores']
     std_seq = graph_data['std_sequencing_pores']
     std_idle = graph_data['std_idle_pores']
-    adp_dead = graph_data['adp_alive_pores']
+    adp_dead = graph_data['adp_dead_pores']
     adp_seq = graph_data['adp_sequencing_pores']
     adp_idle = graph_data['adp_idle_pores']
     
@@ -83,7 +83,7 @@ def display_graph(graph_data, total_runtime):
     plt.tight_layout()
     plt.show()
 
-    # --- Graph 3: Alive pores ---
+    # --- Graph 3: Dead, Sequencing and Idle pores ---
     plt.figure(figsize=(5, 5))
     plt.plot(time_points, std_dead, label='Standard Dead', color='#F88378')
     plt.plot(time_points, std_seq, label='Standard Sequencing', color='#AFD9AE')
@@ -92,11 +92,12 @@ def display_graph(graph_data, total_runtime):
     plt.plot(time_points, adp_seq, label='Adaptive Sequencing', color='#AFD9AE', linestyle='--')
     plt.plot(time_points, adp_idle, label='Adaptive Idle', color='#FFC107', linestyle='--')
     plt.xlabel('Time (s)')
-    plt.ylabel('Alive Pores')
-    plt.title('Alive Pores Over Time')
+    plt.ylabel('Dead/Sequencing/Idle Pores')
+    plt.title('Dead/Sequencing/Idle Pores Over Time')
     plt.xlim(0, total_runtime)
     plt.ylim(0, 100)  # Maximum number of pores
     plt.legend()
     plt.grid(True)
+
     plt.tight_layout()
     plt.show()
