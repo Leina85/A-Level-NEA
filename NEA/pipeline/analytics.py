@@ -35,10 +35,11 @@ def add_data_point(graph_data, second, standard_flow_cell, adaptive_flow_cell):
 
 def display_graph(graph_data, total_runtime):
     
-    #Plots three separate graphs showing standard and adaptive pore data over time.
-    #Graph 1: Total bases sequenced
-    #Graph 2: Target bases sequenced
-    #Graph 3: Dead, Sequencing and Idle pores
+    # plots three separate graphs showing standard and adaptive pore data over time.
+    # graph 1: total bases sequenced
+    # graph 2: target bases sequenced
+    # graph 3: dead, sequencing and idle standard pores
+    # graph 4: dead, sequencing and idle adaptive pores
 
     # extract data from graph_data
     time_points = graph_data['time_points']
@@ -57,7 +58,7 @@ def display_graph(graph_data, total_runtime):
     adp_idle = graph_data['adp_idle_pores']
     
 
-    # --- Graph 1: Total bases sequenced ---
+    # --- graph 1: total bases sequenced ---
     plt.figure(figsize=(5, 5))
     plt.plot(time_points, std_total_bases, label='Standard', color='blue')
     plt.plot(time_points, adp_total_bases, label='Adaptive', color='red')
@@ -70,7 +71,7 @@ def display_graph(graph_data, total_runtime):
     plt.tight_layout()
     plt.show()
 
-    # --- Graph 2: Target bases sequenced ---
+    # --- graph 2: target bases sequenced ---
     plt.figure(figsize=(5, 5))
     plt.plot(time_points, std_target_bases, label='Standard', color='blue')
     plt.plot(time_points, adp_target_bases, label='Adaptive', color='red')
@@ -83,19 +84,32 @@ def display_graph(graph_data, total_runtime):
     plt.tight_layout()
     plt.show()
 
-    # --- Graph 3: Dead, Sequencing and Idle pores ---
+    # --- graph 3: dead, sequencing and idle standard pores ---
     plt.figure(figsize=(5, 5))
-    plt.plot(time_points, std_dead, label='Standard Dead', color='#F88378')
-    plt.plot(time_points, std_seq, label='Standard Sequencing', color='#AFD9AE')
-    plt.plot(time_points, std_idle, label='Standard Idle', color='#FFC107')
-    plt.plot(time_points, adp_dead, label='Adaptive Dead', color='#F88378', linestyle='--')
-    plt.plot(time_points, adp_seq, label='Adaptive Sequencing', color='#AFD9AE', linestyle='--')
-    plt.plot(time_points, adp_idle, label='Adaptive Idle', color='#FFC107', linestyle='--')
+    plt.plot(time_points, std_dead, label='Dead', color='#F88378', linewidth = 0.8)
+    plt.plot(time_points, std_seq, label='Sequencing', color='#AFD9AE', linewidth = 0.8)
+    plt.plot(time_points, std_idle, label='Idle', color='#FFC107', linewidth = 0.8)
     plt.xlabel('Time (s)')
-    plt.ylabel('Dead/Sequencing/Idle Pores')
-    plt.title('Dead/Sequencing/Idle Pores Over Time')
+    plt.ylabel('Dead/Sequencing/Idle Standard Pores')
+    plt.title('Dead/Sequencing/Idle Standard Pores Over Time')
     plt.xlim(0, total_runtime)
-    plt.ylim(0, 100)  # Maximum number of pores
+    plt.ylim(0, 100)  # maximum number of pores
+    plt.legend()
+    plt.grid(True)
+
+    plt.tight_layout()
+    plt.show()
+    
+    # --- graph 4: dead, sequencing and idle adaptive pores ---
+    plt.figure(figsize=(5, 5))
+    plt.plot(time_points, adp_dead, label='Dead', color='#F88378', linewidth = 0.8)
+    plt.plot(time_points, adp_seq, label='Sequencing', color='#AFD9AE', linewidth = 0.8)
+    plt.plot(time_points, adp_idle, label='Idle', color='#FFC107', linewidth = 0.8)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Dead/Sequencing/Idle Adaptive Pores')
+    plt.title('Dead/Sequencing/Idle Adaptive Pores Over Time')
+    plt.xlim(0, total_runtime)
+    plt.ylim(0, 100)  # maximum number of pores
     plt.legend()
     plt.grid(True)
 
