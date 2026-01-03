@@ -60,7 +60,7 @@ def display_graph(graph_data, total_runtime):
     
 
     # --- graph 1: total bases sequenced ---
-    fig1 = plt.figure(figsize=(5, 5))
+    fig1 = plt.figure(figsize=(3.8, 3.8))
     plt.plot(time_points, std_total_bases, label='Standard', color='blue')
     plt.plot(time_points, adp_total_bases, label='Adaptive', color='red')
     plt.xlabel('Time (s)')
@@ -74,7 +74,7 @@ def display_graph(graph_data, total_runtime):
     graph1 = plot_to_surf(fig1)
 
     # --- graph 2: target bases sequenced ---
-    fig2 = plt.figure(figsize=(5, 5))
+    fig2 = plt.figure(figsize=(3.8, 3.8))
     plt.plot(time_points, std_target_bases, label='Standard', color='blue')
     plt.plot(time_points, adp_target_bases, label='Adaptive', color='red')
     plt.xlabel('Time (s)')
@@ -88,7 +88,7 @@ def display_graph(graph_data, total_runtime):
     graph2 = plot_to_surf(fig2)
 
     # --- graph 3: dead, sequencing and idle standard pores ---
-    fig3 = plt.figure(figsize=(5, 5))
+    fig3 = plt.figure(figsize=(3.8, 3.8))
     plt.plot(time_points, std_dead, label='Dead', color='#F88378')
     plt.plot(time_points, std_seq, label='Sequencing', color='#AFD9AE', linewidth = 0.5)
     plt.plot(time_points, std_idle, label='Idle', color='#FFC107', linewidth = 0.5)
@@ -104,7 +104,7 @@ def display_graph(graph_data, total_runtime):
     graph3 = plot_to_surf(fig3)
     
     # --- graph 4: dead, sequencing and idle adaptive pores ---
-    fig4 = plt.figure(figsize=(5, 5))
+    fig4 = plt.figure(figsize=(3.8, 3.8))
     plt.plot(time_points, adp_dead, label='Dead', color='#F88378')
     plt.plot(time_points, adp_seq, label='Sequencing', color='#AFD9AE', linewidth = 0.5)
     plt.plot(time_points, adp_idle, label='Idle', color='#FFC107', linewidth = 0.5)
