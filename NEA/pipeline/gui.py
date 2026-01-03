@@ -23,7 +23,7 @@ def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_
     result = simulation(runtime, avg_molecule_length, target_fraction, progress_callback, simulation_state, graph_data)
     
     # store final results
-    screen_data['start_menu']['simulation_results'] = {
+    screen_data['grid_menu']['simulation_results'] = {
         'standard': result[0],
         'adaptive': result[1]
     }
@@ -132,7 +132,7 @@ def handleevents(active_btn, current_screen, screen_data, simulation_state, grap
                                 display_text += f"Target Fraction: {target_fraction}%\n\n"
                                 display_text += "Simulation Running..."
                                 
-                                screen_data['start_menu']['display_text'] = display_text
+                                screen_data['grid_menu']['display_text'] = display_text
                                 
                                 # Start simulation in separate thread
                                 sim_thread = threading.Thread(
@@ -224,12 +224,12 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data, simulatio
             y_offset += 40  # Reduced from 50 to 40
 
     # draw display text and simulation results
-    if current_screen == 'start_menu':
+    if current_screen == 'grid_menu':
         display_font = pygame.font.Font(None, FONT_SIZES['display'])
         result_font = pygame.font.Font(None, FONT_SIZES['result'])
         y_offset = 200
         
-    # Show input parameters
+        # show input parameters
         if 'display_text' in screen_info and screen_info['display_text']:
             text_lines = screen_info['display_text'].split('\n')
             
@@ -239,7 +239,7 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data, simulatio
                 screen.blit(line_surf, line_rect)
                 y_offset += 60
     
-    # Show real-time progress if simulation is running
+        # show real-time progress if simulation is running
         if simulation_state['running'] or simulation_state['standard_results'] is not None:
             y_offset += 20
             
@@ -274,7 +274,7 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data, simulatio
                 screen.blit(complete_surf, complete_rect)
                 y_offset += 60
         
-        # Display current pore data as grids
+            # display current pore data as grids
             if simulation_state['standard_results'] is not None and simulation_state['adaptive_results'] is not None:
                 y_offset += 20
                 
