@@ -68,6 +68,8 @@ def display_graph(graph_data, total_runtime):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
+    
+    graph1 = plot_to_surf(fig1)
 
     # --- graph 2: target bases sequenced ---
     fig2 = plt.figure(figsize=(5, 5))
@@ -80,6 +82,8 @@ def display_graph(graph_data, total_runtime):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
+    
+    graph2 = plot_to_surf(fig2)
 
     # --- graph 3: dead, sequencing and idle standard pores ---
     fig3 = plt.figure(figsize=(5, 5))
@@ -95,6 +99,8 @@ def display_graph(graph_data, total_runtime):
     plt.grid(True)
     plt.tight_layout()
     
+    graph3 = plot_to_surf(fig3)
+    
     # --- graph 4: dead, sequencing and idle adaptive pores ---
     fig4 = plt.figure(figsize=(5, 5))
     plt.plot(time_points, adp_dead, label='Dead', color='#F88378')
@@ -108,6 +114,11 @@ def display_graph(graph_data, total_runtime):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
+    
+    graph4 = plot_to_surf(fig4)
+    
+    analytics_graphs = [graph1, graph2, graph3, graph4]
+    return analytics_graphs
     
 def plot_to_surf(fig):
     buffer = BytesIO()
