@@ -5,7 +5,7 @@ from configuration import *
 from simulation import simulation
 from analytics import *
 
-def progress_callback(current_second, total_runtime, standard_data, adaptive_data, simulation_state, graph_data):
+def progress_callback(current_second, total_runtime, standard_data, adaptive_data, simulation_state, graph_data, screen_data):
     # callback function that updates the simulation state
     simulation_state.update({
         'current_second': current_second,
@@ -15,12 +15,13 @@ def progress_callback(current_second, total_runtime, standard_data, adaptive_dat
     })
     
     add_data_point(graph_data, current_second, standard_data, adaptive_data)
+    screen_data['graph_menu']['graph_surfaces'] = display_graph(graph_data, simulation_state['total_runtme'])
     
 def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_data, simulation_state, graph_data):
     simulation_state['running'] = True
     
     # run simulation and capture results
-    result = simulation(runtime, avg_molecule_length, target_fraction, progress_callback, simulation_state, graph_data)
+    result = simulation(runtime, avg_molecule_length, target_fraction, progress_callback, simulation_state, graph_data, screen_data)
     
     # store final results
     screen_data['grid_menu']['simulation_results'] = {
@@ -377,12 +378,13 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data, simulatio
     if current_screen == 'graph_menu':
         
         #call the display_graph function to create images for the graphs
-        analytics_graphs = display_graph(graph_data, simulation_state['total_runtime'])
+        analytics_graphs = screen_data['graph_menu']['graph_surfaces']
         
         # display all three graphs
-        screen.blit(analytics_graphs[0], (50, 200))
-        screen.blit(analytics_graphs[1], (455, 200))
-        screen.blit(analytics_graphs[2], (860, 200))
+        if analytics_graphs:
+            screen.blit(analytics_graphs[0], (50, 200))
+            screen.blit(analytics_graphs[1], (455, 200))
+            screen.blit(analytics_graphs[2], (860, 200))
         
     # draw buttons
     if 'buttons' in screen_info:
