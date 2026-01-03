@@ -67,15 +67,25 @@ SCREENS = {
             2: {'pos': (640, 340), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule\nLength (Kb)'},
             3: {'pos': (640, 440), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases\nTarget (Percentage)', 'max_length': 2},
             'default_values': {'pos': (640, 540), 'text': 'Apply Default Values', 'size': MAIN_BTN_SIZE},
-            'start': {'pos': (640, 640), 'text': 'Start', 'target': 'start_menu', 'size': MAIN_BTN_SIZE}
+            'start': {'pos': (640, 640), 'text': 'Start', 'target': 'grid_menu', 'size': MAIN_BTN_SIZE}
         }
     },
-    'start_menu': {
-        'title': 'Start Menu',
+    'grid_menu': {
+        'title': 'Grid Menu',
         'display_text': '',
         'simulation_results': None,
         'simulation_running': False,
         'current_second': 0,
-        'total_runtime': 0
+        'total_runtime': 0,
+        'navbtn':{'text': 'Graphs', 'target': 'graph_menu'}
+    },
+    'graph_menu': {
+        'title': 'Graph Menu',
+        'navbtn':{'text': 'Grid', 'target': 'grid_menu'},
+        'show_graph_4': False,
+        'graph_surfaces': None,
+        'buttons': {
+            'toggle': {'pos': (640, 540), 'text': 'Standard', 'size': DEFAULT_BTN_SIZE}
+        }
     }
 }
