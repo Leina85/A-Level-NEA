@@ -122,7 +122,7 @@ def display_graph(graph_data, total_runtime):
     
 def plot_to_surf(fig):
     buffer = BytesIO()
-    fig.savefig(buffer, format-"png")
+    fig.savefig(buffer, format="png")
     buffer.seek(0)
     
     plt.close(fig)
