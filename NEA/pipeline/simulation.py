@@ -1,7 +1,7 @@
 import numpy as np
 from analytics import display_graph
 
-def simulation(runtime, avg_molecule_length, target_fraction, progress_callback, simulation_state, graph_data):
+def simulation(runtime, avg_molecule_length, target_fraction, progress_callback, simulation_state, graph_data, screen_data):
     
     # Constant Parameters
     MEAN = 7472.521
@@ -148,7 +148,6 @@ def simulation(runtime, avg_molecule_length, target_fraction, progress_callback,
 
         # Send progress update at regular intervals
         if second % update_interval == 0 or second == runtime - 1:
-            progress_callback(second + 1, runtime, standard_flow_cell.copy(), adaptive_flow_cell.copy(), simulation_state, graph_data)
+            progress_callback(second + 1, runtime, standard_flow_cell.copy(), adaptive_flow_cell.copy(), simulation_state, graph_data, screen_data)
         
-    print(standard_flow_cell[0], adaptive_flow_cell[0])
     return standard_flow_cell, adaptive_flow_cell
