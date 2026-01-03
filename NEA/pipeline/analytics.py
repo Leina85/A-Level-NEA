@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
+from io import BytesIO
 import pygame
-import io
-from PIL import Image
 
 def add_data_point(graph_data, second, standard_flow_cell, adaptive_flow_cell):
     # time
@@ -59,7 +58,7 @@ def display_graph(graph_data, total_runtime):
     
 
     # --- graph 1: total bases sequenced ---
-    plt.figure(figsize=(5, 5))
+    fig1 = plt.figure(figsize=(5, 5))
     plt.plot(time_points, std_total_bases, label='Standard', color='blue')
     plt.plot(time_points, adp_total_bases, label='Adaptive', color='red')
     plt.xlabel('Time (s)')
@@ -69,10 +68,9 @@ def display_graph(graph_data, total_runtime):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.show()
 
     # --- graph 2: target bases sequenced ---
-    plt.figure(figsize=(5, 5))
+    fig2 = plt.figure(figsize=(5, 5))
     plt.plot(time_points, std_target_bases, label='Standard', color='blue')
     plt.plot(time_points, adp_target_bases, label='Adaptive', color='red')
     plt.xlabel('Time (s)')
@@ -82,10 +80,9 @@ def display_graph(graph_data, total_runtime):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.show()
 
     # --- graph 3: dead, sequencing and idle standard pores ---
-    plt.figure(figsize=(5, 5))
+    fig3 = plt.figure(figsize=(5, 5))
     plt.plot(time_points, std_dead, label='Dead', color='#F88378')
     plt.plot(time_points, std_seq, label='Sequencing', color='#AFD9AE', linewidth = 0.5)
     plt.plot(time_points, std_idle, label='Idle', color='#FFC107', linewidth = 0.5)
@@ -96,12 +93,10 @@ def display_graph(graph_data, total_runtime):
     plt.ylim(0, 100)  # maximum number of pores
     plt.legend()
     plt.grid(True)
-
     plt.tight_layout()
-    plt.show()
     
     # --- graph 4: dead, sequencing and idle adaptive pores ---
-    plt.figure(figsize=(5, 5))
+    fig4 = plt.figure(figsize=(5, 5))
     plt.plot(time_points, adp_dead, label='Dead', color='#F88378')
     plt.plot(time_points, adp_seq, label='Sequencing', color='#AFD9AE', linewidth = 0.5)
     plt.plot(time_points, adp_idle, label='Idle', color='#FFC107', linewidth = 0.5)
@@ -112,6 +107,14 @@ def display_graph(graph_data, total_runtime):
     plt.ylim(0, 100)  # maximum number of pores
     plt.legend()
     plt.grid(True)
-
     plt.tight_layout()
-    plt.show()
+    
+def plot_to_surf(fig):
+    buffer = BytesIO()
+    fig.savefig(buffer, format-"png")
+    buffer.seek(0)
+    
+    plt.close(fig)
+    surface = pygame.image.load(buffer).convert_alpha()
+    
+    return surface
