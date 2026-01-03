@@ -15,7 +15,7 @@ def progress_callback(current_second, total_runtime, standard_data, adaptive_dat
     })
     
     add_data_point(graph_data, current_second, standard_data, adaptive_data)
-    screen_data['graph_menu']['graph_surfaces'] = display_graph(graph_data, simulation_state['total_runtme'])
+    screen_data['graph_menu']['graph_surfaces'] = display_graph(graph_data, simulation_state['total_runtime'])
     
 def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_data, simulation_state, graph_data):
     simulation_state['running'] = True
