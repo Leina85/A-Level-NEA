@@ -382,9 +382,9 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data, simulatio
         
         # display all three graphs
         if analytics_graphs:
-            screen.blit(analytics_graphs[0], (50, 200))
-            screen.blit(analytics_graphs[1], (455, 200))
-            screen.blit(analytics_graphs[2], (860, 200))
+            screen.blit(analytics_graphs[0], (50, 150))
+            screen.blit(analytics_graphs[1], (455, 150))
+            screen.blit(analytics_graphs[2], (860, 150))
         
     # draw buttons
     if 'buttons' in screen_info:
