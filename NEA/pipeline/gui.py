@@ -223,10 +223,9 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data, simulatio
             screen.blit(line_surf, line_rect)
             y_offset += 40  # Reduced from 50 to 40
 
-    # draw display text and simulation results
+    # draw display text and simulation results on grid
     if current_screen == 'grid_menu':
         display_font = pygame.font.Font(None, FONT_SIZES['display'])
-        result_font = pygame.font.Font(None, FONT_SIZES['result'])
         y_offset = 200
         
         # show input parameters
@@ -366,7 +365,17 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data, simulatio
                 adp_y += 35
                 draw_text(f"Adaptive - Sequencing: {adp_sequencing_count} | Idle: {adp_idle_count} | Dead: {adp_dead_count}", adp_center_x, adp_y)
 
-
+    # draw display text and simulation results on graphs
+    if current_screen == 'graph_menu':
+        
+        #call the display_graph function to create images for the graphs
+        analytics_graphs = display_graph(graph_data, simulation_state['total_runtime'])
+        
+        # display all three graphs
+        screen.blit(analytics_graphs[0], (50, 200))
+        screen.blit(analytics_graphs[1], (455, 200))
+        screen.blit(analytics_graphs[2], (860, 200))
+        
     # draw buttons
     if 'buttons' in screen_info:
         button_font = pygame.font.Font(None, FONT_SIZES['button_small'])
