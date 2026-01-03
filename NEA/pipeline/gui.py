@@ -80,19 +80,26 @@ def handleevents(active_btn, current_screen, screen_data, simulation_state, grap
             
             # check navigation button
             if 'navbtn' in screen_info:
-                navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
+                # set nav button position based on current screen
+                if current_screen == 'grid_menu':
+                    navbtn_rect = pygame.Rect(SCREEN_WIDTH - NAV_BTN_SIZE[0] - 30, SCREEN_HEIGHT - NAV_BTN_SIZE[1] - 30, *NAV_BTN_SIZE)
+                elif current_screen == 'graph_menu':
+                    navbtn_rect = pygame.Rect(30, SCREEN_HEIGHT - NAV_BTN_SIZE[1] - 30, *NAV_BTN_SIZE)
+                else:
+                    navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
+
+                # check if the nav button was clicked
                 if navbtn_rect.collidepoint(event.pos):
-                    # if trying to go to graph_menu, check if data exists
+                    # if going to graph menu, only allow if simulation data exists
                     if screen_info['navbtn']['target'] == 'graph_menu':
                         if simulation_state['standard_results'] is not None and len(graph_data['time_points']) > 0:
                             current_screen = screen_info['navbtn']['target']
                             active_btn = None
-                            continue
-                        # else do nothing (button click is ignored)
+                            continue  # skip the rest of the event loop
                     else:
                         current_screen = screen_info['navbtn']['target']
                         active_btn = None
-                        continue
+                        continue  # skip the rest of the event loop
             
             # check screen buttons
             if 'buttons' in screen_info:
@@ -201,7 +208,14 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data, simulatio
     # draw navigation button
     if 'navbtn' in screen_info:
         nav_font = pygame.font.Font(None, FONT_SIZES['nav'])
-        navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
+        
+        if current_screen == 'grid_menu':
+            navbtn_rect = pygame.Rect(SCREEN_WIDTH - NAV_BTN_SIZE[0] - 30, SCREEN_HEIGHT - NAV_BTN_SIZE[1] - 30, *NAV_BTN_SIZE)
+        elif current_screen == 'graph_menu':
+            navbtn_rect = pygame.Rect(30, SCREEN_HEIGHT - NAV_BTN_SIZE[1] - 30, *NAV_BTN_SIZE)
+        else:
+            navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
+            
         pygame.draw.rect(screen, COLOURS['navbtn'], navbtn_rect)
         textsurf = nav_font.render(screen_info['navbtn']['text'], True, COLOURS['text'])
         textrect = textsurf.get_rect(center=navbtn_rect.center)
