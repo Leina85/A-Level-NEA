@@ -151,5 +151,4 @@ def simulation(runtime, avg_molecule_length, target_fraction, progress_callback,
             progress_callback(second + 1, runtime, standard_flow_cell.copy(), adaptive_flow_cell.copy(), simulation_state, graph_data)
         
     print(standard_flow_cell[0], adaptive_flow_cell[0])
-    display_graph(graph_data, runtime)
     return standard_flow_cell, adaptive_flow_cell
