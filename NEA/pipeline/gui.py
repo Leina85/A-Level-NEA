@@ -81,9 +81,17 @@ def handleevents(active_btn, current_screen, screen_data, simulation_state, grap
             if 'navbtn' in screen_info:
                 navbtn_rect = pygame.Rect(50, 50, *NAV_BTN_SIZE)
                 if navbtn_rect.collidepoint(event.pos):
-                    current_screen = screen_info['navbtn']['target']
-                    active_btn = None
-                    continue
+                    # if trying to go to graph_menu, check if data exists
+                    if screen_info['navbtn']['target'] == 'graph_menu':
+                        if simulation_state['standard_results'] is not None and len(graph_data['time_points']) > 0:
+                            current_screen = screen_info['navbtn']['target']
+                            active_btn = None
+                            continue
+                        # else do nothing (button click is ignored)
+                    else:
+                        current_screen = screen_info['navbtn']['target']
+                        active_btn = None
+                        continue
             
             # check screen buttons
             if 'buttons' in screen_info:
