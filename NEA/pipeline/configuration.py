@@ -83,7 +83,7 @@ SCREENS = {
         'title': 'Graph Menu',
         'navbtn':{'text': 'Grid', 'target': 'grid_menu'},
         'show_graph_4': False,
-        'graph_surfaces': None,
+        'all_graph_surfaces': None,
         'buttons': {
             'toggle': {'pos': (640, 540), 'text': 'Standard', 'size': DEFAULT_BTN_SIZE}
         }

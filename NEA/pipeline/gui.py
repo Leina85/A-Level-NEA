@@ -15,7 +15,7 @@ def progress_callback(current_second, total_runtime, standard_data, adaptive_dat
     })
     
     add_data_point(graph_data, current_second, standard_data, adaptive_data)
-    screen_data['graph_menu']['graph_surfaces'] = display_graph(graph_data, simulation_state['total_runtime'])
+    screen_data['graph_menu']['all_graph_surfaces'] = display_graph(graph_data, simulation_state['total_runtime'])
     
 def run_simulation_thread(runtime, avg_molecule_length, target_fraction, screen_data, simulation_state, graph_data):
     simulation_state['running'] = True
@@ -176,13 +176,9 @@ def handleevents(active_btn, current_screen, screen_data, simulation_state, grap
                             break
                         
                         if btn_key == 'toggle' and current_screen == 'graph_menu':
-                            if not screen_info['show_graph_4']:
-                                screen_info['show_graph_4'] = True
-                                btn_data['text'] = 'Adaptive'
-                            else:
-                                screen_info['show_graph_4'] = False
-                                btn_data['text'] = 'Standard'
-                            break
+                            screen_info['show_graph_4'] = not screen_info.get('show_graph_4', False)
+                            btn_data['text'] = 'Adaptive' if screen_info['show_graph_4'] else 'Standard'
+                        break
                             
                         # handle input buttons
                         if btn_data.get('input'):
@@ -397,17 +393,17 @@ def renderscreen(screen, font, activebtn, current_screen, screen_data, simulatio
                 adp_y += 35
                 draw_text(f"Adaptive - Sequencing: {adp_sequencing_count} | Idle: {adp_idle_count} | Dead: {adp_dead_count}", adp_center_x, adp_y)
 
-    # draw display text and simulation results on graphs
     if current_screen == 'graph_menu':
-        
-        #call the display_graph function to create images for the graphs
-        analytics_graphs = screen_data['graph_menu']['graph_surfaces']
-        
-        # display all three graphs
-        if analytics_graphs:
-            screen.blit(analytics_graphs[0], (50, 150))
-            screen.blit(analytics_graphs[1], (455, 150))
-            screen.blit(analytics_graphs[2], (860, 150))
+        graphs = screen_data['graph_menu'].get('all_graph_surfaces')
+        show_graph_4 = screen_data['graph_menu'].get('show_graph_4', False)
+
+        if graphs:
+            screen.blit(graphs[0], (50, 150))
+            screen.blit(graphs[1], (455, 150))
+
+            # toggle between graph 3 and 4
+            third_graph = graphs[3] if show_graph_4 else graphs[2]
+            screen.blit(third_graph, (860, 150))
         
     # draw buttons
     if 'buttons' in screen_info:
