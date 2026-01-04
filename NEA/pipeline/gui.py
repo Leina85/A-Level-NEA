@@ -175,6 +175,15 @@ def handleevents(active_btn, current_screen, screen_data, simulation_state, grap
                             active_btn = None
                             break
                         
+                        if btn_key == 'toggle' and current_screen == 'graph_menu':
+                            if not screen_info['show_graph_4']:
+                                screen_info['show_graph_4'] = True
+                                btn_data['text'] = 'Adaptive'
+                            else:
+                                screen_info['show_graph_4'] = False
+                                btn_data['text'] = 'Standard'
+                            break
+                            
                         # handle input buttons
                         if btn_data.get('input'):
                             active_btn = btn_key
