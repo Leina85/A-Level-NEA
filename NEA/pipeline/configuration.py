@@ -85,7 +85,7 @@ SCREENS = {
         'show_graph_4': False,
         'all_graph_surfaces': None,
         'buttons': {
-            'toggle': {'pos': (640, 540), 'text': 'Standard', 'size': DEFAULT_BTN_SIZE}
+            'toggle': {'pos': ((1062, 580)), 'text': 'Standard', 'size': DEFAULT_BTN_SIZE}
         }
     }
 }
