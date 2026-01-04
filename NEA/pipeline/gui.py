@@ -144,7 +144,7 @@ def handleevents(active_btn, current_screen, screen_data, simulation_state, grap
                                 
                                 # create display text
                                 display_text = f"Runtime: {runtime} s\n"
-                                display_text += f"Avg Molecule Length: {avg_molecule_length} Kb\n"
+                                display_text += f"Avg Molecule Length: {avg_molecule_length} Bases\n"
                                 display_text += f"Target Fraction: {target_fraction}%\n\n"
                                 display_text += "Simulation Running..."
                                 

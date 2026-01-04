@@ -57,14 +57,14 @@ SCREENS = {
     'help_menu_2': {
         'title': 'Help Menu - Page 2',
         'navbtn': {'text': 'Back', 'target': 'main_menu'},
-        'help_text': 'In this Simulation, there are three variables: Average Molecule Length; Sequencing Rate; and Runtime. Average Molecule Length refers to the mean length of the DNA molecules that pass through pores. It is measured in Kilobases (Kb), One Kilobase is one thousand bases. Sequencing rate is the number of bases a pore can sequence each second. It is measured in bases per second (Bps) and the standard rate of sequencing for nanopore sequencing is 450 Bps. Runtime is how many virtual seconds the simulation will run for (this is not how long the simulation will take to run). Too small values will generate very little data, but after too much time, the pores will die. If you are not sure, press the apply default values button to use predetermined values and see what happens!'
+        'help_text': 'In this Simulation, there are three variables: Average Molecule Length; Sequencing Rate; and Runtime. Average Molecule Length refers to the mean length of the DNA molecules that pass through pores. It is measured in Bases. Sequencing rate is the number of bases a pore can sequence each second. It is measured in bases per second (Bps) and the standard rate of sequencing for nanopore sequencing is 450 Bps. Runtime is how many virtual seconds the simulation will run for (this is not how long the simulation will take to run). Too small values will generate very little data, but after too much time, the pores will die. If you are not sure, press the apply default values button to use predetermined values and see what happens!'
     },
     'input_menu': {
         'title': 'Input Menu',
         'navbtn': {'text': 'Back', 'target': 'main_menu'},
         'buttons': {
             1: {'pos': (640, 240), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Runtime (s)'},
-            2: {'pos': (640, 340), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule\nLength (Kb)'},
+            2: {'pos': (640, 340), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Average Molecule\nLength (Bases)'},
             3: {'pos': (640, 440), 'text': '', 'size': MAIN_BTN_SIZE, 'input': True, 'label': 'Fraction of Bases\nTarget (Percentage)', 'max_length': 2},
             'default_values': {'pos': (640, 540), 'text': 'Apply Default Values', 'size': MAIN_BTN_SIZE},
             'start': {'pos': (640, 640), 'text': 'Start', 'target': 'grid_menu', 'size': MAIN_BTN_SIZE}
